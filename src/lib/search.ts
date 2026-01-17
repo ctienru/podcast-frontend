@@ -1,4 +1,4 @@
-import type { Show, Episode, PagedResult } from "@/types/search";
+import type { Show, Episode, PagedResult, RankingsResult } from "@/types/search";
 
 /* =========================
  * Error
@@ -16,6 +16,21 @@ export class SearchApiError extends Error {
 /* =========================
  * Helpers
  * ========================= */
+
+// Get API base URL - use localhost for client-side, backend for server-side
+function getApiBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_SEARCH_API_BASE;
+
+  // If running on server-side (Node.js environment)
+  if (typeof window === "undefined") {
+    // Replace localhost with backend for Docker internal network
+    return envUrl?.replace("localhost", "backend") ?? "http://backend:8080/api";
+  }
+
+  // Client-side uses the environment variable as-is (localhost)
+  return envUrl ?? "http://localhost:8080/api";
+}
+
 function ensureOkApiResponse<T>(
   json: any,
   fallbackPage: number,
@@ -53,8 +68,9 @@ export async function searchShowsFromApi({
   query: string;
   pageSize: number;
 }): Promise<PagedResult<Show>> {
+  const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SEARCH_API_BASE}/search/shows`,
+    `${apiBaseUrl}/search/shows`,
     {
       method: "POST",
       headers: {
@@ -93,8 +109,9 @@ export async function searchEpisodesFromApi({
   page: number;
   pageSize: number;
 }): Promise<PagedResult<Episode>> {
+  const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SEARCH_API_BASE}/search/episodes`,
+    `${apiBaseUrl}/search/episodes`,
     {
       method: "POST",
       headers: {
@@ -119,4 +136,51 @@ export async function searchEpisodesFromApi({
   const json = await res.json();
 
   return ensureOkApiResponse<Episode>(json, page, pageSize);
+}
+
+/* =========================
+ * Rankings
+ * ========================= */
+export async function getRankingsFromApi({
+  country = "tw",
+  type = "podcast",
+  limit = 20,
+}: {
+  country?: string;
+  type?: string;
+  limit?: number;
+}): Promise<RankingsResult> {
+  const apiBaseUrl = getApiBaseUrl();
+  const params = new URLSearchParams({
+    country,
+    type,
+    limit: String(limit),
+  });
+
+  const res = await fetch(`${apiBaseUrl}/rankings?${params}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new SearchApiError(
+      `Rankings API error: ${res.status}`,
+      res.status
+    );
+  }
+
+  const json = await res.json();
+
+  if (!json || typeof json !== "object") {
+    throw new SearchApiError("Invalid API response", 500);
+  }
+
+  if (json.status === "error") {
+    throw new SearchApiError(
+      json.error?.message ?? "Rankings API error",
+      400
+    );
+  }
+
+  return json.data ?? { country, type, items: [] };
 }

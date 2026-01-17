@@ -1,11 +1,16 @@
 export type Show = {
-  podcastId: string;
+  showId: string;
   title: string;
   description?: string;
   language?: string;
   publisher: string;
   imageUrl?: string;
   episodeCount?: number;
+
+  highlights?: {
+    title?: string[];
+    description?: string[];
+  };
 };
 
 export type Episode = {
@@ -23,10 +28,13 @@ export type Episode = {
   imageUrl?: string;
 
   podcast: {
-    podcastId: string;
+    showId: string;
     title: string;
     publisher: string;
     imageUrl?: string;
+    externalUrl?: {
+      applePodcastUrl?: string;
+    };
   };
 };
 
@@ -37,4 +45,24 @@ export type PagedResult<T> = {
   total: number;
   page: number;
   pageSize: number;
+};
+
+export type RankingsItem = {
+  rank: number;
+  showId: string;
+  title: string;
+  publisher: string;
+  imageUrl?: string;
+  language?: string;
+  episodeCount?: number;
+  externalUrls?: {
+    apple_podcasts?: string;
+  };
+};
+
+export type RankingsResult = {
+  country: string;
+  type: string;
+  items: RankingsItem[];
+  updatedAt?: string;  // ISO 8601
 };

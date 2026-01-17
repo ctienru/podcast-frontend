@@ -11,6 +11,7 @@ import type { Show, Episode, PagedResult } from "@/types/search";
 
 const SHOW_PAGE_SIZE = 5;
 const EPISODE_PAGE_SIZE = 10;
+const MIN_QUERY_LENGTH = 2;
 
 type Props = {
   query: string;
@@ -70,14 +71,21 @@ export default async function SearchResultsSection({
     }
   }
 
+  // determine what to render
+  const isQueryTooShort = query.trim().length < MIN_QUERY_LENGTH;
+  const hasShows = showResults.length > 0;
+  const hasEpisodes = episodeResults.length > 0;
+
   return (
     <>
       <SearchSummary query={query} total={episodeTotal} />
 
       {error ? (
         <SearchError message={error} />
-      ) : episodeResults.length === 0 ? (
-        <SearchEmpty query={query} />
+      ) : isQueryTooShort ? (
+        <SearchEmpty query={query} reason="too_short" />
+      ) : !hasEpisodes ? (
+        <SearchEmpty query={query} hasShows={hasShows} />
       ) : (
         <>
           {schema && (

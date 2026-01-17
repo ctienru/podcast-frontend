@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { setRequestLocale } from "next-intl/server";
 import { SearchBar } from "@/components/search/header/SearchBar";
 import SearchResultsSection from "@/components/search/searchPage/SearchResultsSection";
 import { SearchLoading } from "@/components/search/SearchLoading";
@@ -9,9 +10,10 @@ type PageProps = {
   searchParams: Promise<{ q?: string; page?: string }>;
 };
 
-export default async function SearchPage({
-  searchParams,
-}: PageProps) {
+export default async function SearchPage({ params, searchParams }: PageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const resolvedSearchParams = await searchParams;
 
   const query = resolvedSearchParams.q?.trim() ?? "";
@@ -73,7 +75,7 @@ export async function generateMetadata({
     robots: {
       index:
         !!query &&
-        query.length >= 3 &&
+        query.length >= 2 &&
         (!page || page === "1"),
       follow: true,
     },
