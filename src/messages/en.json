@@ -1,0 +1,17 @@
+{
+  "site": {
+    "title": "Podcast Search",
+    "tagline": "Search podcasts and episodes"
+  },
+  "search": {
+    "placeholder": "Search podcasts or episodes",
+    "button": "Search",
+    "results": "Results for \"{query}\" · {count} items",
+    "emptyTitle": "No results found",
+    "emptyDescription": "Try a different keyword"
+  },
+  "language": {
+    "en": "English",
+    "zh-TW": "中文"
+  }
+}
