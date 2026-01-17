@@ -20,14 +20,17 @@ export function SearchResultsClient({
   query,
 }: Props) {
   const router = useRouter();
-  const params = useSearchParams();
+  const searchParams = useSearchParams();
 
-  const handlePageChange = (nextPage: number) => {
-    const newParams = new URLSearchParams(params.toString());
-    newParams.set("page", String(nextPage));
-    if (query) newParams.set("q", query);
+  const onPageChange = (nextPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-    router.push(`?${newParams.toString()}`);
+    params.set("page", String(nextPage));
+    if (query) {
+      params.set("q", query);
+    }
+
+    router.push(`?${params.toString()}`);
   };
 
   return (
@@ -38,7 +41,7 @@ export function SearchResultsClient({
         page={page}
         total={total}
         pageSize={pageSize}
-        onPageChange={handlePageChange}
+        onPageChange={onPageChange}
       />
     </>
   );
