@@ -1,8 +1,27 @@
+"use client";
+
+import { useRouter, useParams } from "next/navigation";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function HomePage() {
+  const router = useRouter();
+  const params = useParams<{ locale: string }>();
+  const locale = params.locale;
+
+  const [query, setQuery] = useState("");
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+
+    router.push(
+      `/${locale}/search?q=${encodeURIComponent(query)}&page=1`
+    );
+  };
+
   return (
     <>
       {/* Hero */}
@@ -14,8 +33,15 @@ export default function HomePage() {
           Explore Apple Podcasts with powerful search and rankings.
         </p>
 
-        <form className="mx-auto max-w-md flex gap-2">
-          <Input placeholder="Search podcasts or episodes" />
+        <form
+          onSubmit={onSubmit}
+          className="mx-auto max-w-md flex gap-2"
+        >
+          <Input
+            placeholder="Search podcasts or episodes"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
           <Button type="submit">Search</Button>
         </form>
       </section>

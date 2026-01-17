@@ -1,45 +1,46 @@
 import { Suspense } from "react";
-import { SearchBar } from "@/components/search/SearchBar";
-import SearchResultsSection from "@/components/search/SearchResultsSection";
+import { SearchBar } from "@/components/search/header/SearchBar";
+import SearchResultsSection from "@/components/search/searchPage/SearchResultsSection";
 import { SearchLoading } from "@/components/search/SearchLoading";
-import { SearchSummary } from "@/components/search/SearchSummary";
 import type { Metadata } from "next";
+
+type PageProps = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ q?: string; page?: string }>;
+};
 
 export default async function SearchPage({
   searchParams,
-}: {
-  searchParams: Promise<{ q?: string; page?: string }>;
-}) {
-  const params = await searchParams;
-  const query = params.q ?? "";
-  const page = Math.max(1, Number(params.page ?? "1"));
+}: PageProps) {
+  const resolvedSearchParams = await searchParams;
+
+  const query = resolvedSearchParams.q?.trim() ?? "";
+  const page = Math.max(1, Number(resolvedSearchParams.page ?? "1"));
+  const hasQuery = query.length > 0;
 
   return (
     <section className="space-y-6">
       <SearchBar />
-
-      {/* loading summary (shown immediately) */}
-      <SearchSummary query={query} />
-
-      {/* skeleton + streaming */}
-      <Suspense fallback={<SearchLoading />}>
-        <SearchResultsSection
-          key={`${query}:${page}`}
-          query={query}
-          page={page}
-        />
-      </Suspense>
+      {hasQuery && (
+        <Suspense fallback={<SearchLoading />}>
+          <SearchResultsSection
+            key={`${query}:${page}`}
+            query={query}
+            page={page}
+          />
+        </Suspense>
+      )}
     </section>
   );
 }
 
+/* =========================
+ * Metadata
+ * ========================= */
 export async function generateMetadata({
   params,
   searchParams,
-}: {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<{ q?: string; page?: string }>;
-}): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
 
@@ -59,7 +60,6 @@ export async function generateMetadata({
     ? `Search results for "${query}" on ${siteName}.`
     : `Search podcasts and episodes on ${siteName}.`;
 
-  // canonical NEVER includes page
   const canonicalUrl = query
     ? `${baseUrl}/${locale}/search?q=${encodeURIComponent(query)}`
     : `${baseUrl}/${locale}/search`;
