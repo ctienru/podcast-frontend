@@ -3,15 +3,46 @@
     "title": "Podcast Search",
     "tagline": "Search podcasts and episodes"
   },
+  "home": {
+    "heroTitle": "Search Podcasts & Episodes",
+    "heroDescription": "Explore Apple Podcasts with powerful search and rankings.",
+    "rankingsTitle": "Podcast Rankings",
+    "rankingsDescription": "Apple Podcasts charts in Taiwan and the US.",
+    "episodeSearchTitle": "Episode Search",
+    "episodeSearchDescription": "Search across episodes, not just podcast titles."
+  },
   "search": {
     "placeholder": "Search podcasts or episodes",
     "button": "Search",
     "results": "Results for \"{query}\" · {count} items",
     "emptyTitle": "No results found",
-    "emptyDescription": "Try a different keyword"
+    "emptyDescription": "Try a different keyword",
+    "podcasts": "Podcasts",
+    "episodes": "Episodes",
+    "errorMessage": "Something went wrong. Please try again later.",
+    "retry": "Retry"
+  },
+  "rankings": {
+    "title": "Rankings",
+    "description": "Apple Podcasts charts",
+    "selectCountry": "Select country",
+    "taiwan": "Taiwan",
+    "unitedStates": "United States",
+    "podcast": "Podcast",
+    "episode": "Episode",
+    "noResults": "No rankings available",
+    "episodes": "episodes",
+    "updatedAt": "Updated {time}"
+  },
+  "nav": {
+    "rankings": "Rankings"
   },
   "language": {
-    "en": "English",
-    "zh-TW": "中文"
+    "en": "EN",
+    "zh": "中文"
+  },
+  "common": {
+    "copySuccess": "Copied to clipboard",
+    "clickToCopy": "Click to copy"
   }
 }
