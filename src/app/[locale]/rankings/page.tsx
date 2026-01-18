@@ -9,7 +9,9 @@ type Props = {
 
 export default async function RankingsPage({ params, searchParams }: Props) {
   const { locale } = await params;
-  const { country = "tw", type = "podcast" } = await searchParams;
+  const { country, type = "podcast" } = await searchParams;
+  const defaultCountry = locale === "zh" ? "tw" : "us";
+  const resolvedCountry = country ?? defaultCountry;
   setRequestLocale(locale);
 
   const t = await getTranslations("rankings");
@@ -19,7 +21,7 @@ export default async function RankingsPage({ params, searchParams }: Props) {
 
   try {
     rankings = await getRankingsFromApi({
-      country,
+      country: resolvedCountry,
       type,
       limit: 20,
     });
@@ -37,7 +39,7 @@ export default async function RankingsPage({ params, searchParams }: Props) {
 
       <RankingsClient
         initialRankings={rankings}
-        initialCountry={country}
+        initialCountry={resolvedCountry}
         initialType={type}
         error={error}
         translations={{
