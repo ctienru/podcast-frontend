@@ -1,0 +1,48 @@
+{
+  "site": {
+    "title": "Podcast 搜尋",
+    "tagline": "搜尋 Podcast 節目與單集"
+  },
+  "home": {
+    "heroTitle": "搜尋 Podcast 節目與單集",
+    "heroDescription": "探索 Apple Podcasts，強大的搜尋與排行榜功能。",
+    "rankingsTitle": "Podcast 排行榜",
+    "rankingsDescription": "台灣與美國的 Apple Podcasts 排行榜。",
+    "episodeSearchTitle": "單集搜尋",
+    "episodeSearchDescription": "搜尋單集內容，不只是節目名稱。"
+  },
+  "search": {
+    "placeholder": "搜尋 Podcast 節目或單集",
+    "button": "搜尋",
+    "results": "「{query}」的搜尋結果 · 共 {count} 筆",
+    "emptyTitle": "找不到結果",
+    "emptyDescription": "請嘗試其他關鍵字",
+    "podcasts": "節目",
+    "episodes": "單集",
+    "errorMessage": "發生錯誤，請稍後再試。",
+    "retry": "重試"
+  },
+  "rankings": {
+    "title": "排行榜",
+    "description": "Apple Podcasts 排行榜",
+    "selectCountry": "選擇國家",
+    "taiwan": "台灣",
+    "unitedStates": "美國",
+    "podcast": "節目",
+    "episode": "單集",
+    "noResults": "目前沒有排行榜資料",
+    "episodes": "集",
+    "updatedAt": "{time} 更新"
+  },
+  "nav": {
+    "rankings": "排行榜"
+  },
+  "language": {
+    "en": "EN",
+    "zh": "中文"
+  },
+  "common": {
+    "copySuccess": "已複製到剪貼簿",
+    "clickToCopy": "點擊複製"
+  }
+}
