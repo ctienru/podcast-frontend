@@ -1,36 +1,158 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# podcast-frontend
 
-## Getting Started
+Modern podcast search frontend built with Next.js 16 and React 19, featuring server-side rendering, i18n support, and a responsive UI.
 
-First, run the development server:
+## Architecture Overview
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│     Browser     │────▶│podcast-frontend │────▶│ podcast-backend │
+│  (User Client)  │     │   (Next.js)     │     │  (Search API)   │
+└─────────────────┘     └────────┬────────┘     └─────────────────┘
+                                 │
+                    ┌────────────┴────────────┐
+                    │                         │
+              ┌─────▼─────┐           ┌───────▼───────┐
+              │  Server   │           │    Client     │
+              │Components │           │  Components   │
+              │(Data Fetch)│          │ (Interaction) │
+              └───────────┘           └───────────────┘
+```
+
+## Features
+
+- **Server-First Rendering**: Server Components for data fetching, Client Components for interactivity
+- **Internationalization**: English and Chinese (Traditional) with locale-based routing
+- **Search**: Dual search for podcasts and episodes with pagination
+- **Rankings**: Apple Podcasts rankings by country (Taiwan, US)
+- **SEO Optimized**: Dynamic metadata, canonical URLs, Schema.org structured data
+
+## Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Framework | Next.js 16.1.1 (App Router) |
+| UI Library | React 19.2.3 |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 4, shadcn/ui |
+| i18n | next-intl 4.7.0 |
+| Testing | Vitest, React Testing Library |
+
+## Project Structure
+
+```
+podcast-frontend/
+├── src/
+│   ├── app/                      # Next.js App Router
+│   │   ├── [locale]/            # i18n routes (en, zh)
+│   │   │   ├── page.tsx         # Home page
+│   │   │   ├── search/          # Search results
+│   │   │   └── rankings/        # Podcast rankings
+│   │   └── page.tsx             # Root redirect
+│   ├── components/
+│   │   ├── ui/                  # shadcn/ui components
+│   │   └── search/              # Search components
+│   ├── lib/                     # API client & utilities
+│   ├── types/                   # TypeScript definitions
+│   ├── i18n/                    # i18n configuration
+│   ├── messages/                # Translation files (en.json, zh.json)
+│   └── __tests__/               # Unit tests
+├── public/                      # Static assets
+├── Dockerfile                   # Production build
+└── package.json
+```
+
+## Quick Start
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure Environment
+
+Create `.env.local`:
+
+```bash
+NEXT_PUBLIC_SEARCH_API_BASE=http://localhost:8080/api
+```
+
+### 3. Start Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Verify Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Navigate to http://localhost:3000/en
+2. Enter a search query (e.g., "technology")
+3. Confirm search results appear
 
-## Learn More
+> **Note**: Requires `podcast-backend` running on port 8080.
 
-To learn more about Next.js, take a look at the following resources:
+## Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_SEARCH_API_BASE` | Backend API URL | `http://localhost:8080/api` |
+| `NEXT_PUBLIC_SITE_URL` | Frontend URL (for SEO) | `http://localhost:3000` |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Available Scripts
 
-## Deploy on Vercel
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run tests in watch mode |
+| `npm run test:run` | Run tests once |
+| `npm run test:coverage` | Run tests with coverage |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Routes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Route | Description |
+|-------|-------------|
+| `/[locale]` | Home page with search |
+| `/[locale]/search?q=<query>&page=<n>` | Search results |
+| `/[locale]/rankings` | Podcast rankings |
+
+Supported locales: `en`, `zh`
+
+## Testing
+
+```bash
+# Run all tests
+npm run test:run
+
+# Run with coverage
+npm run test:coverage
+
+# Watch mode
+npm run test
+```
+
+## Docker
+
+Build and run with Docker:
+
+```bash
+# Build image
+docker build -t podcast-frontend .
+
+# Run container
+docker run -p 3000:3000 \
+  -e NEXT_PUBLIC_SEARCH_API_BASE=http://backend:8080/api \
+  podcast-frontend
+```
+
+## Related Projects
+
+- **podcast-backend**: Search API service (Spring Boot)
+- **podcast-search**: Elasticsearch indexing service
+- **podcast-crawler**: Data crawling service
+- **podcast-spec**: OpenAPI specification

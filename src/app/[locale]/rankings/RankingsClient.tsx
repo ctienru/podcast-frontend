@@ -146,6 +146,7 @@ export function RankingsClient({
                 <Card className="flex-1">
                   <CardContent className="p-4">
                     <article className="flex gap-4">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
                       <img
                         src={imgSrc}
                         alt={item.title ?? ""}

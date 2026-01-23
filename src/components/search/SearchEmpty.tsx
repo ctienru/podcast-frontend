@@ -25,7 +25,7 @@ export function SearchEmpty({ query, hasShows, reason }: Props) {
       <div className="rounded-md border p-6 text-center">
         <p className="font-medium">No episodes found</p>
         <p className="text-sm text-muted-foreground">
-          We found matching podcasts above, but no specific episodes for "{query}".
+          We found matching podcasts above, but no specific episodes for &quot;{query}&quot;.
         </p>
       </div>
     );

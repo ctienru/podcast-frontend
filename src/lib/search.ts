@@ -14,6 +14,22 @@ export class SearchApiError extends Error {
 }
 
 /* =========================
+ * Types
+ * ========================= */
+interface ApiResponse<T> {
+  status: "ok" | "partial_success" | "error";
+  data?: {
+    page?: number;
+    size?: number;
+    total?: number;
+    items?: T[];
+  };
+  error?: {
+    message?: string;
+  };
+}
+
+/* =========================
  * Helpers
  * ========================= */
 
@@ -32,7 +48,7 @@ function getApiBaseUrl(): string {
 }
 
 function ensureOkApiResponse<T>(
-  json: any,
+  json: ApiResponse<T>,
   fallbackPage: number,
   fallbackSize: number
 ): PagedResult<T> {

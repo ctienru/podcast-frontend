@@ -56,6 +56,7 @@ export function ShowResultCard({ show }: Props) {
     <Card className="h-full">
       <CardContent className="p-4 h-full">
         <article className="flex gap-4 h-full">
+          {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
           <img
             src={imgSrc}
             alt={show.title}

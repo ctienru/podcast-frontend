@@ -3,7 +3,7 @@ import type { Show, Episode } from "@/types/search";
 type SchemaResult = Show | Episode;
 
 export function buildSearchItemListSchema({
-  url,
+  url: _url, // eslint-disable-line @typescript-eslint/no-unused-vars -- reserved for future canonical URL
   results,
 }: {
   url: string;
