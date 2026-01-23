@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest";
+import React from "react";
 import { vi } from "vitest";
 
 // Mock next-intl
@@ -21,17 +22,19 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Mock @/i18n/navigation
-vi.mock("@/i18n/navigation", () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-  }),
-  usePathname: () => "/",
-  Link: ({ children, ...props }: React.PropsWithChildren<{ href: string; locale?: string }>) => {
-    const React = require("react");
-    return React.createElement("a", props, children);
-  },
-}));
+vi.mock("@/i18n/navigation", async () => {
+  const ActualReact = await vi.importActual<typeof import("react")>("react");
+  return {
+    useRouter: () => ({
+      push: vi.fn(),
+      replace: vi.fn(),
+    }),
+    usePathname: () => "/",
+    Link: ({ children, ...props }: React.PropsWithChildren<{ href: string; locale?: string }>) => {
+      return ActualReact.createElement("a", props, children);
+    },
+  };
+});
 
 // Mock sonner
 vi.mock("sonner", () => ({

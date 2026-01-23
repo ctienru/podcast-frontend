@@ -104,7 +104,7 @@ export function EpisodeResultCard({ episode }: Props) {
     <Card>
       <CardContent className="p-4">
         <article className="flex gap-4">
-          {/* Left: Podcast image */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
           <img
             src={imgSrc}
             alt={podcast.title || "Podcast cover"}
