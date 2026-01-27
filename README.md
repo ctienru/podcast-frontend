@@ -1,6 +1,6 @@
 # podcast-frontend
 
-Modern podcast search frontend built with Next.js 16 and React 19, featuring server-side rendering, i18n support, and a responsive UI.
+Podcast episode search frontend built with Next.js 16 and React 19, featuring server-side rendering, i18n support, and a responsive UI.
 
 ## Architecture Overview
 
@@ -23,7 +23,7 @@ Modern podcast search frontend built with Next.js 16 and React 19, featuring ser
 
 - **Server-First Rendering**: Server Components for data fetching, Client Components for interactivity
 - **Internationalization**: English and Chinese (Traditional) with locale-based routing
-- **Search**: Dual search for podcasts and episodes with pagination
+- **Episode Search**: Search podcast episodes with language filter (English / Chinese / Hybrid)
 - **Rankings**: Apple Podcasts rankings by country (Taiwan, US)
 - **SEO Optimized**: Dynamic metadata, canonical URLs, Schema.org structured data
 
@@ -51,7 +51,9 @@ podcast-frontend/
 │   │   └── page.tsx             # Root redirect
 │   ├── components/
 │   │   ├── ui/                  # shadcn/ui components
-│   │   └── search/              # Search components
+│   │   ├── search/              # Search components
+│   │   ├── NavSearchBox.tsx     # Header search input
+│   │   └── LanguageSwitcher.tsx # i18n locale switcher
 │   ├── lib/                     # API client & utilities
 │   ├── types/                   # TypeScript definitions
 │   ├── i18n/                    # i18n configuration
@@ -118,8 +120,8 @@ Open http://localhost:3000 to view the app.
 | Route | Description |
 |-------|-------------|
 | `/[locale]` | Home page with search |
-| `/[locale]/search?q=<query>&page=<n>` | Search results |
-| `/[locale]/rankings` | Podcast rankings |
+| `/[locale]/search?q=<query>&page=<n>&lang=<en\|zh\|hybrid>` | Search results with language filter |
+| `/[locale]/rankings?country=<tw\|us>&type=<podcast\|episode>` | Podcast/episode rankings |
 
 Supported locales: `en`, `zh`
 
@@ -153,6 +155,7 @@ docker run -p 3000:3000 \
 ## Related Projects
 
 - **podcast-backend**: Search API service (Spring Boot)
-- **podcast-search**: Elasticsearch indexing service
-- **podcast-crawler**: Data crawling service
+- **podcast-search**: RSS parsing, data cleaning, ES indexing (Python)
+- **podcast-crawler**: RSS fetching, show metadata extraction (Python)
 - **podcast-spec**: OpenAPI specification
+- **podcast-infra**: Infrastructure and deployment
