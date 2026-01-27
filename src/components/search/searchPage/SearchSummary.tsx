@@ -1,21 +1,24 @@
+import { getTranslations } from "next-intl/server";
+
 type Props = {
   query: string;
   total: number;
 };
 
-export function SearchSummary({ query, total }: Props) {
+export async function SearchSummary({ query, total }: Props) {
+  const t = await getTranslations("search");
+
   if (!query) {
     return (
       <p className="text-sm text-muted-foreground">
-        Showing all results · {total.toLocaleString()} items
+        {t("resultsAll", { count: total.toLocaleString() })}
       </p>
     );
   }
 
   return (
     <p className="text-sm text-muted-foreground">
-      Results for <strong>“{query}”</strong> ·{" "}
-      {total.toLocaleString()} items
+      {t("results", { query, count: total.toLocaleString() })}
     </p>
   );
 }

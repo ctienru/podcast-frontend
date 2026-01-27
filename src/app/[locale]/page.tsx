@@ -42,27 +42,16 @@ export default function HomePage() {
 
       {/* Highlights */}
       <section className="py-8">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Link href="/rankings" className="block">
-            <Card className="h-full hover:bg-accent transition-colors cursor-pointer">
-              <CardContent className="p-4 space-y-1">
-                <h2 className="font-semibold">{t("rankingsTitle")}</h2>
-                <p className="text-sm text-muted-foreground">
-                  {t("rankingsDescription")}
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Card>
+        <Link href="/rankings" className="block max-w-sm mx-auto">
+          <Card className="hover:bg-accent transition-colors cursor-pointer">
             <CardContent className="p-4 space-y-1">
-              <h2 className="font-semibold">{t("episodeSearchTitle")}</h2>
+              <h2 className="font-semibold">{t("rankingsTitle")}</h2>
               <p className="text-sm text-muted-foreground">
-                {t("episodeSearchDescription")}
+                {t("rankingsDescription")}
               </p>
             </CardContent>
           </Card>
-        </div>
+        </Link>
       </section>
     </>
   );
