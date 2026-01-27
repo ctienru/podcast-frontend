@@ -32,7 +32,7 @@ const defaultTranslations = {
   episode: "Episode",
   noResults: "No results",
   episodes: "episodes",
-  updatedAt: "Updated {time}",
+  updatedAt: "Updated __time__",
 };
 
 const createMockItem = (overrides?: Partial<RankingsItem>): RankingsItem => ({
