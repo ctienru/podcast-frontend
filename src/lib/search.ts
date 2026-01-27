@@ -80,9 +80,11 @@ function ensureOkApiResponse<T>(
 export async function searchShowsFromApi({
   query,
   pageSize,
+  language,
 }: {
   query: string;
   pageSize: number;
+  language?: string[];
 }): Promise<PagedResult<Show>> {
   const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
@@ -97,6 +99,7 @@ export async function searchShowsFromApi({
         q: query,
         page: 1, // discovery only
         size: pageSize,
+        ...(language?.length && { language }),
       }),
     }
   );
@@ -120,10 +123,12 @@ export async function searchEpisodesFromApi({
   query,
   page,
   pageSize,
+  language,
 }: {
   query: string;
   page: number;
   pageSize: number;
+  language?: string[];
 }): Promise<PagedResult<Episode>> {
   const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
@@ -138,6 +143,7 @@ export async function searchEpisodesFromApi({
         q: query,
         page,
         size: pageSize,
+        ...(language?.length && { language }),
       }),
     }
   );

@@ -1,30 +1,36 @@
 {
   "site": {
-    "title": "Podcast Search",
-    "tagline": "Search podcasts and episodes"
+    "title": "Podvein",
+    "tagline": "Podcast episode search"
   },
   "home": {
-    "heroTitle": "Search Podcasts & Episodes",
-    "heroDescription": "Explore Apple Podcasts with powerful search and rankings.",
+    "heroTitle": "Search Podcast Episodes",
+    "heroDescription": "Search across 170,000+ episodes from Apple Podcasts.",
     "rankingsTitle": "Podcast Rankings",
-    "rankingsDescription": "Apple Podcasts charts in Taiwan and the US.",
-    "episodeSearchTitle": "Episode Search",
-    "episodeSearchDescription": "Search across episodes, not just podcast titles."
+    "rankingsDescription": "Apple Podcasts charts in Taiwan and the US."
   },
   "search": {
-    "placeholder": "Search podcasts or episodes",
+    "placeholder": "Search episodes",
     "button": "Search",
     "results": "Results for \"{query}\" · {count} items",
+    "resultsAll": "Showing all results · {count} items",
     "emptyTitle": "No results found",
     "emptyDescription": "Try a different keyword",
     "podcasts": "Podcasts",
     "episodes": "Episodes",
     "errorMessage": "Something went wrong. Please try again later.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "langEn": "English",
+    "langZh": "Chinese",
+    "langHybrid": "Hybrid"
   },
   "rankings": {
-    "title": "Rankings",
-    "description": "Apple Podcasts charts",
+    "title": "Podcast Rankings",
+    "titlePodcast": "Apple Podcasts Top Podcasts",
+    "titleEpisode": "Apple Podcasts Top Episodes",
+    "description": "Top podcasts and episodes from Apple Podcasts charts",
+    "descriptionPodcast": "Browse the top podcasts on Apple Podcasts US charts.",
+    "descriptionEpisode": "Browse the top episodes on Apple Podcasts US charts.",
     "selectCountry": "Select country",
     "taiwan": "Taiwan",
     "unitedStates": "United States",
@@ -32,9 +38,10 @@
     "episode": "Episode",
     "noResults": "No rankings available",
     "episodes": "episodes",
-    "updatedAt": "Updated {time}"
+    "updatedAt": "Updated __time__"
   },
   "nav": {
+    "search": "Search",
     "rankings": "Rankings"
   },
   "language": {

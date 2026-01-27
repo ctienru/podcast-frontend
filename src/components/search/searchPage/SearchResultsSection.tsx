@@ -2,49 +2,37 @@ import { SearchResultsClient } from "@/components/search/searchPage/SearchResult
 import { SearchSummary } from "@/components/search/searchPage/SearchSummary";
 import { SearchEmpty } from "@/components/search/SearchEmpty";
 import { SearchError } from "@/components/search/SearchError";
-import {
-  searchShowsFromApi,
-  searchEpisodesFromApi,
-} from "@/lib/search";
+import { searchEpisodesFromApi } from "@/lib/search";
 import { buildSearchItemListSchema } from "@/lib/schema";
-import type { Show, Episode, PagedResult } from "@/types/search";
+import type { Episode } from "@/types/search";
 
-const SHOW_PAGE_SIZE = 5;
 const EPISODE_PAGE_SIZE = 10;
 const MIN_QUERY_LENGTH = 2;
 
 type Props = {
   query: string;
   page: number;
+  language?: string[];
 };
 
 export default async function SearchResultsSection({
   query,
   page,
+  language,
 }: Props) {
-  let showResults: Show[] = [];
   let episodeResults: Episode[] = [];
   let episodeTotal = 0;
   let error: string | null = null;
   let schema: object | null = null;
 
   try {
-    const [shows, episodes]: [
-      PagedResult<Show>,
-      PagedResult<Episode>
-    ] = await Promise.all([
-      searchShowsFromApi({
-        query,
-        pageSize: SHOW_PAGE_SIZE,
-      }),
-      searchEpisodesFromApi({
-        query,
-        page,
-        pageSize: EPISODE_PAGE_SIZE,
-      }),
-    ]);
+    const episodes = await searchEpisodesFromApi({
+      query,
+      page,
+      pageSize: EPISODE_PAGE_SIZE,
+      language,
+    });
 
-    showResults = shows.items;
     episodeResults = episodes.items;
     episodeTotal = episodes.total;
 
@@ -71,9 +59,7 @@ export default async function SearchResultsSection({
     }
   }
 
-  // determine what to render
   const isQueryTooShort = query.trim().length < MIN_QUERY_LENGTH;
-  const hasShows = showResults.length > 0;
   const hasEpisodes = episodeResults.length > 0;
 
   return (
@@ -85,7 +71,7 @@ export default async function SearchResultsSection({
       ) : isQueryTooShort ? (
         <SearchEmpty query={query} reason="too_short" />
       ) : !hasEpisodes ? (
-        <SearchEmpty query={query} hasShows={hasShows} />
+        <SearchEmpty query={query} />
       ) : (
         <>
           {schema && (
@@ -98,7 +84,6 @@ export default async function SearchResultsSection({
           )}
 
           <SearchResultsClient
-            shows={showResults}
             episodes={episodeResults}
             total={episodeTotal}
             page={page}
