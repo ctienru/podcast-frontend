@@ -16,30 +16,32 @@ import type { RankingsResult } from "@/types/search";
 
 const PLACEHOLDER_IMAGE = "/placeholder-podcast.svg";
 
-function formatRelativeTime(isoString?: string): string {
+function formatRelativeTime(isoString?: string, locale?: string): string {
   if (!isoString) return "";
 
   const date = new Date(isoString);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
+  const isZh = locale === "zh";
 
   const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return isZh ? "剛剛" : "just now";
+  if (minutes < 60) return isZh ? `${minutes} 分鐘前` : `${minutes}m ago`;
 
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return isZh ? `${hours} 小時前` : `${hours}h ago`;
 
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
+  if (days < 7) return isZh ? `${days} 天前` : `${days}d ago`;
 
-  return date.toLocaleDateString();
+  return date.toLocaleDateString(isZh ? "zh-TW" : "en-US");
 }
 
 type Props = {
   initialRankings: RankingsResult | null;
   initialCountry: string;
   initialType: string;
+  locale: string;
   error: string | null;
   translations: {
     selectCountry: string;
@@ -57,6 +59,7 @@ export function RankingsClient({
   initialRankings,
   initialCountry,
   initialType,
+  locale,
   error,
   translations: t,
 }: Props) {
@@ -120,7 +123,7 @@ export function RankingsClient({
 
         {updatedAt && (
           <span className="text-xs text-muted-foreground">
-            {t.updatedAt.replace("{time}", formatRelativeTime(updatedAt))}
+            {t.updatedAt.replace("__time__", formatRelativeTime(updatedAt, locale))}
           </span>
         )}
       </div>
