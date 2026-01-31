@@ -24,8 +24,11 @@ Podcast episode search frontend built with Next.js 16 and React 19, featuring se
 - **Server-First Rendering**: Server Components for data fetching, Client Components for interactivity
 - **Internationalization**: English and Chinese (Traditional) with locale-based routing
 - **Episode Search**: Search podcast episodes with language filter (English / Chinese / Hybrid)
+- **Search Mode Toggle**: Switch between Smart (Hybrid), Keyword (BM25), and Exact search modes
+- **Autocomplete**: Real-time search suggestions with keyboard navigation (↑↓ Enter Escape)
 - **Rankings**: Apple Podcasts rankings by country (Taiwan, US)
 - **SEO Optimized**: Dynamic metadata, canonical URLs, Schema.org structured data
+- **Accessibility**: ARIA labels, keyboard navigation support
 
 ## Tech Stack
 
@@ -52,8 +55,14 @@ podcast-frontend/
 │   ├── components/
 │   │   ├── ui/                  # shadcn/ui components
 │   │   ├── search/              # Search components
+│   │   │   ├── SearchModeToggle.tsx    # Smart/Keyword/Exact toggle
+│   │   │   └── header/
+│   │   │       ├── SearchBar.tsx       # Main search input
+│   │   │       └── SuggestionDropdown.tsx  # Autocomplete dropdown
 │   │   ├── NavSearchBox.tsx     # Header search input
 │   │   └── LanguageSwitcher.tsx # i18n locale switcher
+│   ├── hooks/
+│   │   └── useSuggestions.ts    # Debounced autocomplete hook
 │   ├── lib/                     # API client & utilities
 │   ├── types/                   # TypeScript definitions
 │   ├── i18n/                    # i18n configuration
@@ -120,8 +129,17 @@ Open http://localhost:3000 to view the app.
 | Route | Description |
 |-------|-------------|
 | `/[locale]` | Home page with search |
-| `/[locale]/search?q=<query>&page=<n>&lang=<en\|zh\|hybrid>` | Search results with language filter |
+| `/[locale]/search?q=<query>&page=<n>&lang=<en\|zh\|hybrid>&mode=<bm25\|knn\|hybrid\|exact>` | Search results |
 | `/[locale]/rankings?country=<tw\|us>&type=<podcast\|episode>` | Podcast/episode rankings |
+
+**Search Parameters:**
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `q` | string | Search query |
+| `page` | number | Page number |
+| `lang` | `en`, `zh`, `hybrid` | Language filter |
+| `mode` | `bm25`, `knn`, `hybrid`, `exact` | Search mode |
 
 Supported locales: `en`, `zh`
 
