@@ -1,3 +1,6 @@
+// Search modes for episode search
+export type SearchMode = "bm25" | "knn" | "hybrid" | "exact";
+
 export type Show = {
   showId: string;
   title: string;

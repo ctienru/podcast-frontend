@@ -22,7 +22,11 @@
     "retry": "重試",
     "langEn": "英文",
     "langZh": "中文",
-    "langHybrid": "中英混合"
+    "langHybrid": "中英混合",
+    "modeHybrid": "智慧搜尋",
+    "modeBm25": "關鍵字",
+    "modeExact": "精確搜尋",
+    "loading": "載入中..."
   },
   "rankings": {
     "title": "Podcast 排行榜",

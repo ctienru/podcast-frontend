@@ -1,4 +1,4 @@
-import type { Show, Episode, PagedResult, RankingsResult } from "@/types/search";
+import type { Show, Episode, PagedResult, RankingsResult, SearchMode } from "@/types/search";
 
 /* =========================
  * Error
@@ -77,14 +77,18 @@ function ensureOkApiResponse<T>(
 /* =========================
  * Shows (discovery, page = 1 only)
  * ========================= */
+export type ShowSearchMode = "bm25" | "knn" | "hybrid";
+
 export async function searchShowsFromApi({
   query,
   pageSize,
   language,
+  mode,
 }: {
   query: string;
   pageSize: number;
   language?: string[];
+  mode?: ShowSearchMode;
 }): Promise<PagedResult<Show>> {
   const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
@@ -100,6 +104,7 @@ export async function searchShowsFromApi({
         page: 1, // discovery only
         size: pageSize,
         ...(language?.length && { language }),
+        ...(mode && { mode }),
       }),
     }
   );
@@ -124,11 +129,13 @@ export async function searchEpisodesFromApi({
   page,
   pageSize,
   language,
+  mode,
 }: {
   query: string;
   page: number;
   pageSize: number;
   language?: string[];
+  mode?: SearchMode;
 }): Promise<PagedResult<Episode>> {
   const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
@@ -144,6 +151,7 @@ export async function searchEpisodesFromApi({
         page,
         size: pageSize,
         ...(language?.length && { language }),
+        ...(mode && { mode }),
       }),
     }
   );

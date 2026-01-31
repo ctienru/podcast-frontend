@@ -22,7 +22,11 @@
     "retry": "Retry",
     "langEn": "English",
     "langZh": "Chinese",
-    "langHybrid": "Hybrid"
+    "langHybrid": "Hybrid",
+    "modeHybrid": "Smart",
+    "modeBm25": "Keyword",
+    "modeExact": "Exact",
+    "loading": "Loading..."
   },
   "rankings": {
     "title": "Podcast Rankings",

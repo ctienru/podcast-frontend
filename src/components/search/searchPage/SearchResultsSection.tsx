@@ -4,7 +4,7 @@ import { SearchEmpty } from "@/components/search/SearchEmpty";
 import { SearchError } from "@/components/search/SearchError";
 import { searchEpisodesFromApi } from "@/lib/search";
 import { buildSearchItemListSchema } from "@/lib/schema";
-import type { Episode } from "@/types/search";
+import type { Episode, SearchMode } from "@/types/search";
 
 const EPISODE_PAGE_SIZE = 10;
 const MIN_QUERY_LENGTH = 2;
@@ -13,12 +13,14 @@ type Props = {
   query: string;
   page: number;
   language?: string[];
+  mode?: SearchMode;
 };
 
 export default async function SearchResultsSection({
   query,
   page,
   language,
+  mode,
 }: Props) {
   let episodeResults: Episode[] = [];
   let episodeTotal = 0;
@@ -31,6 +33,7 @@ export default async function SearchResultsSection({
       page,
       pageSize: EPISODE_PAGE_SIZE,
       language,
+      mode,
     });
 
     episodeResults = episodes.items;

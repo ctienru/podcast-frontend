@@ -4,11 +4,13 @@ import { SearchBar } from "@/components/search/header/SearchBar";
 import SearchResultsSection from "@/components/search/searchPage/SearchResultsSection";
 import { SearchLoading } from "@/components/search/SearchLoading";
 import { SearchLangToggle, type LangFilter } from "@/components/search/SearchLangToggle";
+import { SearchModeToggle } from "@/components/search/SearchModeToggle";
+import type { SearchMode } from "@/types/search";
 import type { Metadata } from "next";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ q?: string; page?: string; lang?: string }>;
+  searchParams: Promise<{ q?: string; page?: string; lang?: string; mode?: string }>;
 };
 
 function getLangFilter(langParam: string | undefined, locale: string): LangFilter {
@@ -30,6 +32,14 @@ function getLanguageArray(langFilter: LangFilter): string[] {
   }
 }
 
+function getSearchMode(modeParam: string | undefined): SearchMode {
+  if (modeParam === "bm25") return "bm25";
+  if (modeParam === "knn") return "knn";
+  if (modeParam === "exact") return "exact";
+  // Default to hybrid (smart search)
+  return "hybrid";
+}
+
 export default async function SearchPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -43,11 +53,18 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
 
   const langFilter = getLangFilter(resolvedSearchParams.lang, locale);
   const language = getLanguageArray(langFilter);
+  const searchMode = getSearchMode(resolvedSearchParams.mode);
 
-  const translations = {
+  const langTranslations = {
     langEn: t("langEn"),
     langZh: t("langZh"),
     langHybrid: t("langHybrid"),
+  };
+
+  const modeTranslations = {
+    modeHybrid: t("modeHybrid"),
+    modeBm25: t("modeBm25"),
+    modeExact: t("modeExact"),
   };
 
   return (
@@ -55,13 +72,17 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
       <SearchBar />
       {hasQuery && (
         <>
-          <SearchLangToggle currentLang={langFilter} translations={translations} />
+          <div className="flex flex-wrap gap-4">
+            <SearchLangToggle currentLang={langFilter} translations={langTranslations} />
+            <SearchModeToggle currentMode={searchMode} translations={modeTranslations} />
+          </div>
           <Suspense fallback={<SearchLoading />}>
             <SearchResultsSection
-              key={`${query}:${page}:${langFilter}`}
+              key={`${query}:${page}:${langFilter}:${searchMode}`}
               query={query}
               page={page}
               language={language}
+              mode={searchMode}
             />
           </Suspense>
         </>
