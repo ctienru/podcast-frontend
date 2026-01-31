@@ -26,7 +26,11 @@
     "modeHybrid": "智慧搜尋",
     "modeBm25": "關鍵字",
     "modeExact": "精確搜尋",
-    "loading": "載入中..."
+    "loading": "載入中...",
+    "suggestions": {
+      "shows": "節目",
+      "episodes": "單集"
+    }
   },
   "rankings": {
     "title": "Podcast 排行榜",

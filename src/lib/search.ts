@@ -214,3 +214,85 @@ export async function getRankingsFromApi({
 
   return json.data ?? { country, type, items: [] };
 }
+
+/* =========================
+ * Suggestions (Autocomplete)
+ * ========================= */
+export type ShowSuggestion = {
+  showId: string;
+  title: string;
+  publisher: string;
+  imageUrl?: string;
+};
+
+export type EpisodeSuggestion = {
+  episodeId: string;
+  title: string;
+  showTitle: string;
+  imageUrl?: string;
+};
+
+export type SuggestResult = {
+  shows: ShowSuggestion[];
+  episodes: EpisodeSuggestion[];
+};
+
+interface SuggestApiResponse {
+  status: "ok" | "error";
+  data?: {
+    shows?: ShowSuggestion[];
+    episodes?: EpisodeSuggestion[];
+  };
+  error?: {
+    message?: string;
+  };
+}
+
+export async function getSuggestions({
+  query,
+  showLimit = 5,
+  episodeLimit = 5,
+}: {
+  query: string;
+  showLimit?: number;
+  episodeLimit?: number;
+}): Promise<SuggestResult> {
+  // Don't make API call for short queries
+  if (query.length < 2) {
+    return { shows: [], episodes: [] };
+  }
+
+  const apiBaseUrl = getApiBaseUrl();
+  const params = new URLSearchParams({
+    q: query,
+    showLimit: String(showLimit),
+    episodeLimit: String(episodeLimit),
+  });
+
+  const res = await fetch(`${apiBaseUrl}/search/suggest?${params}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new SearchApiError(`Suggest API error: ${res.status}`, res.status);
+  }
+
+  const json: SuggestApiResponse = await res.json();
+
+  if (!json || typeof json !== "object") {
+    throw new SearchApiError("Invalid API response", 500);
+  }
+
+  if (json.status === "error") {
+    throw new SearchApiError(
+      json.error?.message ?? "Suggest API error",
+      400
+    );
+  }
+
+  return {
+    shows: json.data?.shows ?? [],
+    episodes: json.data?.episodes ?? [],
+  };
+}

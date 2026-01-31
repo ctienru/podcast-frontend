@@ -193,6 +193,117 @@ describe("searchEpisodesFromApi", () => {
       })
     );
   });
+
+  it("should pass mode parameter when provided", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: "ok", data: {} }),
+    });
+
+    await searchEpisodesFromApi({
+      query: "test",
+      page: 1,
+      pageSize: 10,
+      mode: "exact",
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({ q: "test", page: 1, size: 10, mode: "exact" }),
+      })
+    );
+  });
+
+  it("should pass bm25 mode correctly", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: "ok", data: {} }),
+    });
+
+    await searchEpisodesFromApi({
+      query: "keyword search",
+      page: 1,
+      pageSize: 10,
+      mode: "bm25",
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({ q: "keyword search", page: 1, size: 10, mode: "bm25" }),
+      })
+    );
+  });
+
+  it("should pass hybrid mode correctly", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: "ok", data: {} }),
+    });
+
+    await searchEpisodesFromApi({
+      query: "semantic search",
+      page: 1,
+      pageSize: 10,
+      mode: "hybrid",
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({ q: "semantic search", page: 1, size: 10, mode: "hybrid" }),
+      })
+    );
+  });
+
+  it("should not include mode when undefined", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: "ok", data: {} }),
+    });
+
+    await searchEpisodesFromApi({
+      query: "test",
+      page: 1,
+      pageSize: 10,
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({ q: "test", page: 1, size: 10 }),
+      })
+    );
+  });
+
+  it("should pass both language and mode parameters", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: "ok", data: {} }),
+    });
+
+    await searchEpisodesFromApi({
+      query: "test",
+      page: 1,
+      pageSize: 10,
+      language: ["en"],
+      mode: "exact",
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({
+          q: "test",
+          page: 1,
+          size: 10,
+          language: ["en"],
+          mode: "exact",
+        }),
+      })
+    );
+  });
 });
 
 describe("getRankingsFromApi", () => {
