@@ -35,8 +35,9 @@ describe("buildSearchItemListSchema", () => {
       expect(item.item.name).toBe("Test Episode");
       expect(item.item.description).toBe("Episode description");
       expect(item.item.datePublished).toBe("2024-01-15T10:00:00Z");
-      expect(item.item.partOfSeries["@type"]).toBe("PodcastSeries");
-      expect(item.item.partOfSeries.name).toBe("Test Podcast");
+      expect(item.item.partOfSeries).toBeDefined();
+      expect(item.item.partOfSeries?.["@type"]).toBe("PodcastSeries");
+      expect(item.item.partOfSeries?.name).toBe("Test Podcast");
     });
 
     it("should use highlighted description when available", () => {
@@ -87,8 +88,9 @@ describe("buildSearchItemListSchema", () => {
       expect(item.item["@type"]).toBe("PodcastSeries");
       expect(item.item.name).toBe("Test Podcast");
       expect(item.item.inLanguage).toBe("zh");
-      expect(item.item.publisher["@type"]).toBe("Organization");
-      expect(item.item.publisher.name).toBe("Test Publisher");
+      expect(item.item.publisher).toBeDefined();
+      expect(item.item.publisher?.["@type"]).toBe("Organization");
+      expect(item.item.publisher?.name).toBe("Test Publisher");
     });
 
     it("should use default language when not specified", () => {

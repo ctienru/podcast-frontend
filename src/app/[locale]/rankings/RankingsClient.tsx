@@ -206,9 +206,10 @@ export function RankingsClient({
                         </h2>
                         <p className="text-sm text-muted-foreground line-clamp-1">
                           {item.publisher}
-                          {!isEpisodeRankings && item.detail?.episodeCount && item.detail.episodeCount > 0 && (
-                            <> · {item.detail.episodeCount} {t.episodes}</>
-                          )}
+                          {!isEpisodeRankings && (() => {
+                            const count = item.detail?.episodeCount ?? item.episodeCount;
+                            return count && count > 0 ? <> · {count} {t.episodes}</> : null;
+                          })()}
                         </p>
 
                         {/* Categories */}

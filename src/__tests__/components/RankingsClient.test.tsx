@@ -63,6 +63,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -77,6 +78,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -92,6 +94,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -113,6 +116,7 @@ describe("RankingsClient", () => {
           initialRankings={rankings}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -128,6 +132,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -142,6 +147,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -156,6 +162,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -170,6 +177,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings({ type: "episode" })}
           initialCountry="tw"
           initialType="episode"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -186,6 +194,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings({ items: [] })}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -200,6 +209,7 @@ describe("RankingsClient", () => {
           initialRankings={null}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -216,6 +226,7 @@ describe("RankingsClient", () => {
           initialRankings={null}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error="Failed to load rankings"
           translations={defaultTranslations}
         />
@@ -230,6 +241,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error="Error"
           translations={defaultTranslations}
         />
@@ -246,6 +258,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -264,6 +277,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings({ country: "us" })}
           initialCountry="us"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -280,6 +294,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -296,6 +311,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -313,6 +329,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -332,6 +349,7 @@ describe("RankingsClient", () => {
           initialRankings={rankings}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -347,6 +365,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -369,6 +388,7 @@ describe("RankingsClient", () => {
           initialRankings={rankings}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -385,6 +405,7 @@ describe("RankingsClient", () => {
           initialRankings={rankings}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -404,6 +425,7 @@ describe("RankingsClient", () => {
           initialRankings={rankings}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -421,6 +443,7 @@ describe("RankingsClient", () => {
           initialRankings={rankings}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -438,6 +461,7 @@ describe("RankingsClient", () => {
           initialRankings={rankings}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -455,6 +479,7 @@ describe("RankingsClient", () => {
           initialRankings={rankings}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
@@ -471,6 +496,7 @@ describe("RankingsClient", () => {
           initialRankings={createMockRankings()}
           initialCountry="tw"
           initialType="podcast"
+          locale="en"
           error={null}
           translations={defaultTranslations}
         />
