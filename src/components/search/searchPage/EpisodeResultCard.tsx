@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CopyableTitle } from "@/components/CopyableTitle";
 import type { Episode } from "@/types/search";
@@ -95,6 +95,12 @@ export function EpisodeResultCard({ episode }: Props) {
   const initialImage = imageUrl || podcast.imageUrl || PLACEHOLDER_IMAGE;
   const [imgSrc, setImgSrc] = useState(initialImage);
 
+  // Avoid hydration mismatch: only render relative date on client
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const titleWithHighlight =
     highlights?.title?.[0] ?? title;
   const snippet =
@@ -139,7 +145,11 @@ export function EpisodeResultCard({ episode }: Props) {
             {/* Meta */}
             <p className="text-xs text-muted-foreground">
               {formatDuration(durationSec)} ·{" "}
-              {formatRelativeDate(publishedAt)}
+              {isClient ? formatRelativeDate(publishedAt) : new Date(publishedAt).toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
             </p>
 
             {/* Description / highlight */}

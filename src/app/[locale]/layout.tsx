@@ -3,9 +3,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Link } from "@/i18n/navigation";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { NavSearchBox } from "@/components/NavSearchBox";
+import { Header } from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 
@@ -70,30 +68,12 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          {/* Header */}
-          <header className="border-b">
-            <div className="mx-auto max-w-screen-md px-4 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <Link
-                  href="/"
-                  className="font-semibold text-lg hover:opacity-80 transition-opacity"
-                >
-                  {siteT("title")}
-                </Link>
-                <nav className="flex items-center gap-4">
-                  <Link
-                    href="/rankings"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {t("rankings")}
-                  </Link>
-                  <NavSearchBox placeholder={t("search")} />
-                </nav>
-              </div>
-
-              <LanguageSwitcher locale={locale} />
-            </div>
-          </header>
+          <Header
+            locale={locale}
+            siteTitle={siteT("title")}
+            rankingsLabel={t("rankings")}
+            searchPlaceholder={t("search")}
+          />
 
           {/* Main */}
           <main className="mx-auto max-w-screen-md px-4 py-6">{children}</main>
