@@ -26,11 +26,7 @@
     "modeHybrid": "Smart",
     "modeBm25": "Keyword",
     "modeExact": "Exact",
-    "loading": "Loading...",
-    "suggestions": {
-      "shows": "Podcasts",
-      "episodes": "Episodes"
-    }
+    "loading": "Loading..."
   },
   "rankings": {
     "title": "Podcast Rankings",

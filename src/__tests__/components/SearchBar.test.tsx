@@ -19,15 +19,6 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => mockSearchParams,
 }));
 
-// Mock useSuggestions hook
-vi.mock("@/hooks/useSuggestions", () => ({
-  useSuggestions: () => ({
-    suggestions: { shows: [], episodes: [] },
-    isLoading: false,
-    hasResults: false,
-  }),
-}));
-
 beforeEach(() => {
   vi.clearAllMocks();
   mockSearchParams = new URLSearchParams();
@@ -38,7 +29,7 @@ describe("SearchBar", () => {
     it("should render input and button", () => {
       render(<SearchBar />);
 
-      expect(screen.getByRole("combobox")).toBeInTheDocument();
+      expect(screen.getByRole("textbox")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "button" })).toBeInTheDocument();
     });
 
@@ -51,14 +42,14 @@ describe("SearchBar", () => {
     it("should start with empty value when no query param", () => {
       render(<SearchBar />);
 
-      expect(screen.getByRole("combobox")).toHaveValue("");
+      expect(screen.getByRole("textbox")).toHaveValue("");
     });
 
     it("should initialize with URL query value", () => {
       mockSearchParams = new URLSearchParams("q=initial+query");
       render(<SearchBar />);
 
-      expect(screen.getByRole("combobox")).toHaveValue("initial query");
+      expect(screen.getByRole("textbox")).toHaveValue("initial query");
     });
   });
 
@@ -66,7 +57,7 @@ describe("SearchBar", () => {
     it("should update value on user input", async () => {
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.type(input, "test search");
 
       expect(input).toHaveValue("test search");
@@ -75,7 +66,7 @@ describe("SearchBar", () => {
     it("should handle Chinese input", async () => {
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.type(input, "科技新聞");
 
       expect(input).toHaveValue("科技新聞");
@@ -84,7 +75,7 @@ describe("SearchBar", () => {
     it("should allow clearing input", async () => {
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.type(input, "something");
       await userEvent.clear(input);
 
@@ -96,7 +87,7 @@ describe("SearchBar", () => {
     it("should navigate with query param on submit", async () => {
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.type(input, "podcast");
 
       const form = input.closest("form");
@@ -108,7 +99,7 @@ describe("SearchBar", () => {
     it("should trim whitespace from query", async () => {
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.type(input, "  search term  ");
 
       fireEvent.submit(input.closest("form")!);
@@ -120,7 +111,7 @@ describe("SearchBar", () => {
       mockSearchParams = new URLSearchParams("q=old&page=2");
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.clear(input);
 
       fireEvent.submit(input.closest("form")!);
@@ -132,7 +123,7 @@ describe("SearchBar", () => {
       mockSearchParams = new URLSearchParams("q=old&page=5");
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.clear(input);
       await userEvent.type(input, "new search");
 
@@ -145,7 +136,7 @@ describe("SearchBar", () => {
       mockSearchParams = new URLSearchParams("sort=date&filter=audio");
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.type(input, "query");
 
       fireEvent.submit(input.closest("form")!);
@@ -164,7 +155,7 @@ describe("SearchBar", () => {
     it("should submit form when button is clicked", async () => {
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.type(input, "click test");
 
       await userEvent.click(screen.getByRole("button", { name: "button" }));
@@ -177,13 +168,13 @@ describe("SearchBar", () => {
     it("should update input when URL query changes", () => {
       const { rerender } = render(<SearchBar />);
 
-      expect(screen.getByRole("combobox")).toHaveValue("");
+      expect(screen.getByRole("textbox")).toHaveValue("");
 
       // Simulate URL change
       mockSearchParams = new URLSearchParams("q=new+value");
       rerender(<SearchBar />);
 
-      expect(screen.getByRole("combobox")).toHaveValue("new value");
+      expect(screen.getByRole("textbox")).toHaveValue("new value");
     });
   });
 
@@ -191,7 +182,7 @@ describe("SearchBar", () => {
     it("should handle special characters in search", async () => {
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("textbox");
       await userEvent.type(input, "C++ programming");
 
       fireEvent.submit(input.closest("form")!);
@@ -203,12 +194,10 @@ describe("SearchBar", () => {
   });
 
   describe("accessibility", () => {
-    it("should have combobox role with aria attributes", () => {
+    it("should have autocomplete off", () => {
       render(<SearchBar />);
 
-      const input = screen.getByRole("combobox");
-      expect(input).toHaveAttribute("aria-expanded", "false");
-      expect(input).toHaveAttribute("aria-controls", "suggestion-listbox");
+      const input = screen.getByRole("textbox");
       expect(input).toHaveAttribute("autocomplete", "off");
     });
   });
