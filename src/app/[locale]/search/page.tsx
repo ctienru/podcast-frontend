@@ -3,9 +3,8 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { SearchBar } from "@/components/search/header/SearchBar";
 import SearchResultsSection from "@/components/search/searchPage/SearchResultsSection";
 import { SearchLoading } from "@/components/search/SearchLoading";
-import { SearchLangToggle, type LangFilter } from "@/components/search/SearchLangToggle";
-import { SearchModeToggle } from "@/components/search/SearchModeToggle";
-import type { SearchMode } from "@/types/search";
+import { SearchPageClient } from "@/components/search/SearchPageClient";
+import type { SearchMode, LangFilter } from "@/types/search";
 import type { Metadata } from "next";
 
 type PageProps = {
@@ -13,12 +12,12 @@ type PageProps = {
   searchParams: Promise<{ q?: string; page?: string; lang?: string; mode?: string }>;
 };
 
-function getLangFilter(langParam: string | undefined, locale: string): LangFilter {
+function getLangFilter(langParam: string | undefined): LangFilter {
   if (langParam === "en") return "en";
   if (langParam === "zh") return "zh";
   if (langParam === "hybrid") return "hybrid";
-  // Default based on locale
-  return locale === "en" ? "en" : "zh";
+  // Default to hybrid (any language)
+  return "hybrid";
 }
 
 function getLanguageArray(langFilter: LangFilter): string[] {
@@ -51,20 +50,32 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
   const page = Math.max(1, Number(resolvedSearchParams.page ?? "1"));
   const hasQuery = query.length > 0;
 
-  const langFilter = getLangFilter(resolvedSearchParams.lang, locale);
+  const langFilter = getLangFilter(resolvedSearchParams.lang);
   const language = getLanguageArray(langFilter);
   const searchMode = getSearchMode(resolvedSearchParams.mode);
 
-  const langTranslations = {
-    langEn: t("langEn"),
-    langZh: t("langZh"),
-    langHybrid: t("langHybrid"),
-  };
-
-  const modeTranslations = {
-    modeHybrid: t("modeHybrid"),
-    modeBm25: t("modeBm25"),
-    modeExact: t("modeExact"),
+  const advancedTranslations = {
+    advanced: t("advanced"),
+    advancedTitle: t("advancedTitle"),
+    advancedSubtitle: t("advancedSubtitle"),
+    matchBehavior: t("matchBehavior"),
+    matchBehaviorHelp: t("matchBehaviorHelp"),
+    matchSmart: t("matchSmart"),
+    matchSmartRecommended: t("matchSmartRecommended"),
+    matchSmartDesc: t("matchSmartDesc"),
+    matchKeyword: t("matchKeyword"),
+    matchKeywordDesc: t("matchKeywordDesc"),
+    matchExact: t("matchExact"),
+    matchExactDesc: t("matchExactDesc"),
+    language: t("language"),
+    languageHelp: t("languageHelp"),
+    langAny: t("langAny"),
+    langZhOnly: t("langZhOnly"),
+    langEnOnly: t("langEnOnly"),
+    applyFilters: t("applyFilters"),
+    reset: t("reset"),
+    filtersApplied: t("filtersApplied"),
+    editFilters: t("editFilters"),
   };
 
   return (
@@ -72,10 +83,11 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
       <SearchBar />
       {hasQuery && (
         <>
-          <div className="flex flex-wrap gap-4">
-            <SearchLangToggle currentLang={langFilter} translations={langTranslations} />
-            <SearchModeToggle currentMode={searchMode} translations={modeTranslations} />
-          </div>
+          <SearchPageClient
+            currentMode={searchMode}
+            currentLang={langFilter}
+            translations={advancedTranslations}
+          />
           <Suspense fallback={<SearchLoading />}>
             <SearchResultsSection
               key={`${query}:${page}:${langFilter}:${searchMode}`}
