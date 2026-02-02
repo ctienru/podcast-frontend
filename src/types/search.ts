@@ -63,6 +63,18 @@ export type RankingsItem = {
   };
 };
 
+export type ShowDetail = {
+  showId: string;
+  description?: string;
+  categories?: string[];
+  language?: string;
+  episodeCount?: number;
+};
+
+export type RankingsItemEnriched = RankingsItem & {
+  detail?: ShowDetail;
+};
+
 export type RankingsResult = {
   country: string;
   type: string;

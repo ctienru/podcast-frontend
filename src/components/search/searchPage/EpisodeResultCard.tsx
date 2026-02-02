@@ -103,7 +103,7 @@ export function EpisodeResultCard({ episode }: Props) {
   return (
     <Card>
       <CardContent className="p-4">
-        <article className="flex gap-4">
+        <article className="flex gap-4 overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
           <img
             src={imgSrc}
@@ -113,7 +113,7 @@ export function EpisodeResultCard({ episode }: Props) {
           />
 
           {/* Right: Content */}
-          <div className="min-w-0 space-y-1">
+          <div className="min-w-0 space-y-1 flex-1">
             {/* Episode title */}
             <h2 className="text-base sm:text-lg font-semibold leading-snug line-clamp-2">
               <CopyableTitle title={title}>

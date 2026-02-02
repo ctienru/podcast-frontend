@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CopyableTitle } from "@/components/CopyableTitle";
-import type { RankingsResult } from "@/types/search";
+import { batchGetShowDetailsFromApi } from "@/lib/search";
+import type { RankingsResult, RankingsItemEnriched } from "@/types/search";
 
 const PLACEHOLDER_IMAGE = "/placeholder-podcast.svg";
 
@@ -69,6 +70,48 @@ export function RankingsClient({
   const [country, setCountry] = useState(initialCountry);
   const [type, setType] = useState(initialType);
   const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
+  const [enrichedItems, setEnrichedItems] = useState<RankingsItemEnriched[]>(
+    initialRankings?.items ?? []
+  );
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+
+  // Async load show details
+  useEffect(() => {
+    const items = initialRankings?.items ?? [];
+    if (items.length === 0 || type === "episode") {
+      setEnrichedItems(items);
+      return;
+    }
+
+    // Extract show IDs
+    const showIds = items
+      .map((item) => item.showId)
+      .filter((id): id is string => id != null);
+
+    if (showIds.length === 0) {
+      setEnrichedItems(items);
+      return;
+    }
+
+    setIsLoadingDetails(true);
+
+    // Batch fetch details
+    batchGetShowDetailsFromApi(showIds)
+      .then((details) => {
+        const enriched = items.map((item) => ({
+          ...item,
+          detail: item.showId ? details[item.showId] : undefined,
+        }));
+        setEnrichedItems(enriched);
+      })
+      .catch((err) => {
+        console.error("Failed to load show details:", err);
+        setEnrichedItems(items); // Fallback to basic items
+      })
+      .finally(() => {
+        setIsLoadingDetails(false);
+      });
+  }, [initialRankings, type]);
 
   const handleCountryChange = (value: string) => {
     setCountry(value);
@@ -96,7 +139,6 @@ export function RankingsClient({
     );
   }
 
-  const items = initialRankings?.items ?? [];
   const updatedAt = initialRankings?.updatedAt;
   const isEpisodeRankings = type === "episode";
 
@@ -129,13 +171,13 @@ export function RankingsClient({
       </div>
 
       {/* Ranking list */}
-      {items.length === 0 ? (
+      {enrichedItems.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-muted-foreground">{t.noResults}</p>
         </div>
       ) : (
         <ol className="space-y-3">
-          {items.map((item) => {
+          {enrichedItems.map((item) => {
             const itemKey = item.showId || `rank-${item.rank}`;
             const imgSrc = imgErrors.has(itemKey)
               ? PLACEHOLDER_IMAGE
@@ -148,15 +190,15 @@ export function RankingsClient({
                 </div>
                 <Card className="flex-1">
                   <CardContent className="p-4">
-                    <article className="flex gap-4">
+                    <article className="flex gap-4 overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
                       <img
                         src={imgSrc}
                         alt={item.title ?? ""}
-                        className="h-16 w-16 rounded-md object-cover shrink-0"
+                        className="h-32 w-32 rounded-md object-cover shrink-0"
                         onError={() => handleImageError(itemKey)}
                       />
-                      <div className="min-w-0 space-y-1">
+                      <div className="min-w-0 space-y-1 flex-1">
                         <h2 className="font-semibold line-clamp-2">
                           <CopyableTitle title={item.title ?? ""}>
                             {item.title}
@@ -164,10 +206,31 @@ export function RankingsClient({
                         </h2>
                         <p className="text-sm text-muted-foreground line-clamp-1">
                           {item.publisher}
-                          {!isEpisodeRankings && item.episodeCount && (
-                            <> · {item.episodeCount} {t.episodes}</>
+                          {!isEpisodeRankings && item.detail?.episodeCount && item.detail.episodeCount > 0 && (
+                            <> · {item.detail.episodeCount} {t.episodes}</>
                           )}
                         </p>
+
+                        {/* Categories */}
+                        {item.detail?.categories && item.detail.categories.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {item.detail.categories.slice(0, 3).map((cat, idx) => (
+                              <span
+                                key={idx}
+                                className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground"
+                              >
+                                {cat}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Description */}
+                        {item.detail?.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-3 pt-1">
+                            {item.detail.description}
+                          </p>
+                        )}
                       </div>
                     </article>
                   </CardContent>
