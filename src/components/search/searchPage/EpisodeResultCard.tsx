@@ -108,7 +108,7 @@ export function EpisodeResultCard({ episode }: Props) {
           <img
             src={imgSrc}
             alt={podcast.title || "Podcast cover"}
-            className="h-16 w-16 rounded-md object-cover shrink-0"
+            className="h-32 w-32 rounded-md object-cover shrink-0"
             onError={() => setImgSrc(PLACEHOLDER_IMAGE)}
           />
 
@@ -144,7 +144,7 @@ export function EpisodeResultCard({ episode }: Props) {
 
             {/* Description / highlight */}
             {snippet && (
-              <p className="text-sm text-muted-foreground line-clamp-2">
+              <p className="text-sm text-muted-foreground line-clamp-4">
                 {renderHighlightedText(snippet)}
               </p>
             )}
