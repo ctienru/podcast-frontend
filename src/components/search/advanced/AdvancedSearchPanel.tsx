@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { SearchMode, LangFilter } from "@/types/search";
 import { MatchBehaviorSection } from "./MatchBehaviorSection";
 import { LanguageFilterSection } from "./LanguageFilterSection";
@@ -46,16 +46,23 @@ export function AdvancedSearchPanel({
   onReset,
   translations,
 }: Props) {
-  // Internal state for draft values
+  // Track previous props to detect changes
+  const prevPropsRef = useRef({ currentMode, currentLang });
+
+  // Internal state for draft values - reset when props change
   const [draftMode, setDraftMode] = useState<SearchMode>(currentMode);
   const [draftLang, setDraftLang] = useState<LangFilter>(currentLang);
 
-  // Sync with current values when they change externally
-  useEffect(() => {
-    // Only update if values actually changed to avoid unnecessary renders
-    setDraftMode((prev) => prev !== currentMode ? currentMode : prev);
-    setDraftLang((prev) => prev !== currentLang ? currentLang : prev);
-  }, [currentMode, currentLang]);
+  // Check if props changed and reset draft values during render
+  if (
+    prevPropsRef.current.currentMode !== currentMode ||
+    prevPropsRef.current.currentLang !== currentLang
+  ) {
+    prevPropsRef.current = { currentMode, currentLang };
+    // Reset draft values to match new props
+    if (draftMode !== currentMode) setDraftMode(currentMode);
+    if (draftLang !== currentLang) setDraftLang(currentLang);
+  }
 
   const handleApply = () => {
     onApply(draftMode, draftLang);

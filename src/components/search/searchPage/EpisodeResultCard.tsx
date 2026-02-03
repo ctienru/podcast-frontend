@@ -1,11 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CopyableTitle } from "@/components/CopyableTitle";
 import type { Episode } from "@/types/search";
 
 const PLACEHOLDER_IMAGE = "/placeholder-podcast.svg";
+
+// Helper to detect client-side rendering (avoids hydration mismatch)
+function getClientSnapshot() {
+  return true;
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+function subscribe() {
+  // No-op: this value never changes after mount
+  return () => {};
+}
 
 type Props = {
   episode: Episode;
@@ -95,12 +109,8 @@ export function EpisodeResultCard({ episode }: Props) {
   const initialImage = imageUrl || podcast.imageUrl || PLACEHOLDER_IMAGE;
   const [imgSrc, setImgSrc] = useState(initialImage);
 
-  // Avoid hydration mismatch: only render relative date on client
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    // Use functional update to avoid setting same value
-    setIsClient((prev) => prev ? prev : true);
-  }, []);
+  // Detect client-side rendering to avoid hydration mismatch
+  const isClient = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
 
   const titleWithHighlight =
     highlights?.title?.[0] ?? title;
