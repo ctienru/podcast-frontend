@@ -51,7 +51,7 @@ export default async function RankingsPage({ params, searchParams }: Props) {
     rankings = await getRankingsFromApi({
       country: resolvedCountry,
       type,
-      limit: 20,
+      limit: 100,
     });
   } catch (e) {
     error = e instanceof Error ? e.message : "Failed to load rankings";

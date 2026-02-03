@@ -107,7 +107,7 @@ describe("cn (className utility)", () => {
     });
 
     it("should work with typical component pattern", () => {
-      const variant = "primary";
+      const variant = "primary" as "primary" | "secondary";
       const className = "custom-class";
 
       const result = cn(

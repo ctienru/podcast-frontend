@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export function SearchBar() {
   const router = useRouter();
@@ -15,6 +15,8 @@ export function SearchBar() {
   // URL -> input (for back/forward and initial hydration)
   const urlQuery = searchParams.get("q") ?? "";
   const [value, setValue] = useState(urlQuery);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setValue(urlQuery);
@@ -38,13 +40,17 @@ export function SearchBar() {
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex gap-2">
-      <Input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder={t("placeholder")}
-      />
-      <Button type="submit">{t("button")}</Button>
-    </form>
+    <div className="relative">
+      <form onSubmit={onSubmit} className="flex gap-2">
+        <Input
+          ref={inputRef}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={t("placeholder")}
+          autoComplete="off"
+        />
+        <Button type="submit">{t("button")}</Button>
+      </form>
+    </div>
   );
 }

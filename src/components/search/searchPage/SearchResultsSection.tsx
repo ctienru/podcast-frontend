@@ -2,39 +2,63 @@ import { SearchResultsClient } from "@/components/search/searchPage/SearchResult
 import { SearchSummary } from "@/components/search/searchPage/SearchSummary";
 import { SearchEmpty } from "@/components/search/SearchEmpty";
 import { SearchError } from "@/components/search/SearchError";
-import { searchEpisodesFromApi } from "@/lib/search";
+import { ShowsBanner } from "@/components/search/searchPage/ShowsBanner";
+import { searchEpisodesFromApi, searchShowsFromApi } from "@/lib/search";
 import { buildSearchItemListSchema } from "@/lib/schema";
-import type { Episode } from "@/types/search";
+import type { Episode, Show, SearchMode } from "@/types/search";
 
 const EPISODE_PAGE_SIZE = 10;
+const SHOWS_PAGE_SIZE = 10;
 const MIN_QUERY_LENGTH = 2;
 
 type Props = {
   query: string;
   page: number;
   language?: string[];
+  mode?: SearchMode;
 };
 
 export default async function SearchResultsSection({
   query,
   page,
   language,
+  mode,
 }: Props) {
   let episodeResults: Episode[] = [];
   let episodeTotal = 0;
+  let showResults: Show[] = [];
   let error: string | null = null;
   let schema: object | null = null;
 
   try {
+    // Fetch episodes
     const episodes = await searchEpisodesFromApi({
       query,
       page,
       pageSize: EPISODE_PAGE_SIZE,
       language,
+      mode,
     });
 
     episodeResults = episodes.items;
     episodeTotal = episodes.total;
+
+    // Fetch shows only on first page, always use hybrid mode
+    if (page === 1) {
+      try {
+        const shows = await searchShowsFromApi({
+          query,
+          pageSize: SHOWS_PAGE_SIZE,
+          language,
+          mode: "hybrid", // Always use hybrid for shows
+        });
+
+        showResults = shows.items;
+      } catch (showErr) {
+        // If show search fails, just log it and continue
+        console.error("Show search failed:", showErr);
+      }
+    }
 
     const baseUrl =
       process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -61,6 +85,7 @@ export default async function SearchResultsSection({
 
   const isQueryTooShort = query.trim().length < MIN_QUERY_LENGTH;
   const hasEpisodes = episodeResults.length > 0;
+  const hasShows = showResults.length > 0;
 
   return (
     <>
@@ -70,7 +95,7 @@ export default async function SearchResultsSection({
         <SearchError message={error} />
       ) : isQueryTooShort ? (
         <SearchEmpty query={query} reason="too_short" />
-      ) : !hasEpisodes ? (
+      ) : !hasEpisodes && !hasShows ? (
         <SearchEmpty query={query} />
       ) : (
         <>
@@ -83,13 +108,20 @@ export default async function SearchResultsSection({
             />
           )}
 
-          <SearchResultsClient
-            episodes={episodeResults}
-            total={episodeTotal}
-            page={page}
-            pageSize={EPISODE_PAGE_SIZE}
-            query={query}
-          />
+          {/* Show banner only on first page */}
+          {page === 1 && hasShows && (
+            <ShowsBanner shows={showResults} />
+          )}
+
+          {hasEpisodes && (
+            <SearchResultsClient
+              episodes={episodeResults}
+              total={episodeTotal}
+              page={page}
+              pageSize={EPISODE_PAGE_SIZE}
+              query={query}
+            />
+          )}
         </>
       )}
     </>

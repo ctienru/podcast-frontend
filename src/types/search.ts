@@ -1,3 +1,9 @@
+// Search modes for episode search
+export type SearchMode = "bm25" | "knn" | "hybrid" | "exact";
+
+// Language filter for search
+export type LangFilter = "en" | "zh" | "hybrid";
+
 export type Show = {
   showId: string;
   title: string;
@@ -58,6 +64,18 @@ export type RankingsItem = {
   externalUrls?: {
     apple_podcasts?: string;
   };
+};
+
+export type ShowDetail = {
+  showId: string;
+  description?: string;
+  categories?: string[];
+  language?: string;
+  episodeCount?: number;
+};
+
+export type RankingsItemEnriched = RankingsItem & {
+  detail?: ShowDetail;
 };
 
 export type RankingsResult = {

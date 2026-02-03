@@ -55,7 +55,7 @@ export function ShowResultCard({ show }: Props) {
   return (
     <Card className="h-full">
       <CardContent className="p-4 h-full">
-        <article className="flex gap-4 h-full">
+        <article className="flex gap-4 h-full overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
           <img
             src={imgSrc}
@@ -64,7 +64,7 @@ export function ShowResultCard({ show }: Props) {
             onError={() => setImgSrc(PLACEHOLDER_IMAGE)}
           />
 
-          <div className="min-w-0 space-y-1">
+          <div className="min-w-0 space-y-1 flex-1">
             <h2 className="font-semibold line-clamp-1">
               <CopyableTitle title={show.title}>
                 {renderHighlightedText(titleWithHighlight)}
@@ -73,7 +73,7 @@ export function ShowResultCard({ show }: Props) {
 
             <p className="text-sm text-muted-foreground">
               {show.publisher}
-              {show.episodeCount && (
+              {show.episodeCount && show.episodeCount > 0 && (
                 <> · {show.episodeCount} episodes</>
               )}
             </p>

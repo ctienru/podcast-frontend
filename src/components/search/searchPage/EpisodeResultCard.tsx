@@ -1,11 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CopyableTitle } from "@/components/CopyableTitle";
 import type { Episode } from "@/types/search";
 
 const PLACEHOLDER_IMAGE = "/placeholder-podcast.svg";
+
+// Helper to detect client-side rendering (avoids hydration mismatch)
+function getClientSnapshot() {
+  return true;
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+function subscribe() {
+  // No-op: this value never changes after mount
+  return () => {};
+}
 
 type Props = {
   episode: Episode;
@@ -95,6 +109,9 @@ export function EpisodeResultCard({ episode }: Props) {
   const initialImage = imageUrl || podcast.imageUrl || PLACEHOLDER_IMAGE;
   const [imgSrc, setImgSrc] = useState(initialImage);
 
+  // Detect client-side rendering to avoid hydration mismatch
+  const isClient = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+
   const titleWithHighlight =
     highlights?.title?.[0] ?? title;
   const snippet =
@@ -103,17 +120,17 @@ export function EpisodeResultCard({ episode }: Props) {
   return (
     <Card>
       <CardContent className="p-4">
-        <article className="flex gap-4">
+        <article className="flex gap-4 overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
           <img
             src={imgSrc}
             alt={podcast.title || "Podcast cover"}
-            className="h-16 w-16 rounded-md object-cover shrink-0"
+            className="h-32 w-32 rounded-md object-cover shrink-0"
             onError={() => setImgSrc(PLACEHOLDER_IMAGE)}
           />
 
           {/* Right: Content */}
-          <div className="min-w-0 space-y-1">
+          <div className="min-w-0 space-y-1 flex-1">
             {/* Episode title */}
             <h2 className="text-base sm:text-lg font-semibold leading-snug line-clamp-2">
               <CopyableTitle title={title}>
@@ -139,12 +156,16 @@ export function EpisodeResultCard({ episode }: Props) {
             {/* Meta */}
             <p className="text-xs text-muted-foreground">
               {formatDuration(durationSec)} ·{" "}
-              {formatRelativeDate(publishedAt)}
+              {isClient ? formatRelativeDate(publishedAt) : new Date(publishedAt).toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
             </p>
 
             {/* Description / highlight */}
             {snippet && (
-              <p className="text-sm text-muted-foreground line-clamp-2">
+              <p className="text-sm text-muted-foreground line-clamp-4">
                 {renderHighlightedText(snippet)}
               </p>
             )}

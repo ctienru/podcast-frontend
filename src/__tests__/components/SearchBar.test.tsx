@@ -192,4 +192,13 @@ describe("SearchBar", () => {
       );
     });
   });
+
+  describe("accessibility", () => {
+    it("should have autocomplete off", () => {
+      render(<SearchBar />);
+
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("autocomplete", "off");
+    });
+  });
 });
