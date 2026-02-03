@@ -52,8 +52,9 @@ export function AdvancedSearchPanel({
 
   // Sync with current values when they change externally
   useEffect(() => {
-    setDraftMode(currentMode);
-    setDraftLang(currentLang);
+    // Only update if values actually changed to avoid unnecessary renders
+    setDraftMode((prev) => prev !== currentMode ? currentMode : prev);
+    setDraftLang((prev) => prev !== currentLang ? currentLang : prev);
   }, [currentMode, currentLang]);
 
   const handleApply = () => {

@@ -71,15 +71,22 @@ export function RankingsClient({
   const [type, setType] = useState(initialType);
   const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
   const [enrichedItems, setEnrichedItems] = useState<RankingsItemEnriched[]>(
-    initialRankings?.items ?? []
+    () => {
+      const items = initialRankings?.items ?? [];
+      // For episodes or empty lists, no enrichment needed
+      if (items.length === 0 || initialType === "episode") {
+        return items;
+      }
+      return items;
+    }
   );
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
   // Async load show details
   useEffect(() => {
     const items = initialRankings?.items ?? [];
+
+    // Early return for cases that don't need async enrichment
     if (items.length === 0 || type === "episode") {
-      setEnrichedItems(items);
       return;
     }
 
@@ -89,13 +96,10 @@ export function RankingsClient({
       .filter((id): id is string => id != null);
 
     if (showIds.length === 0) {
-      setEnrichedItems(items);
       return;
     }
 
-    setIsLoadingDetails(true);
-
-    // Batch fetch details
+    // Batch fetch details (only set state in async callback)
     batchGetShowDetailsFromApi(showIds)
       .then((details) => {
         const enriched = items.map((item) => ({
@@ -107,9 +111,6 @@ export function RankingsClient({
       .catch((err) => {
         console.error("Failed to load show details:", err);
         setEnrichedItems(items); // Fallback to basic items
-      })
-      .finally(() => {
-        setIsLoadingDetails(false);
       });
   }, [initialRankings, type]);
 

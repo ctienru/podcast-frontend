@@ -98,7 +98,8 @@ export function EpisodeResultCard({ episode }: Props) {
   // Avoid hydration mismatch: only render relative date on client
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
-    setIsClient(true);
+    // Use functional update to avoid setting same value
+    setIsClient((prev) => prev ? prev : true);
   }, []);
 
   const titleWithHighlight =
