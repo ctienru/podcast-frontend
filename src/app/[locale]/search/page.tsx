@@ -51,9 +51,10 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
     matchExactDesc: t("matchExactDesc"),
     language: t("language"),
     languageHelp: t("languageHelp"),
-    langAny: t("langAny"),
-    langZhOnly: t("langZhOnly"),
-    langEnOnly: t("langEnOnly"),
+    langZhTw: t("langZhTw"),
+    langZhCn: t("langZhCn"),
+    langEn: t("langEn"),
+    langZhBoth: t("langZhBoth"),
     applyFilters: t("applyFilters"),
     reset: t("reset"),
     filtersApplied: t("filtersApplied"),
@@ -77,6 +78,9 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
               page={page}
               language={language}
               mode={searchMode}
+              searchRequestId={null}
+              searchResultTimestamp={null}
+              selectedLang={langFilter}
             />
           </Suspense>
         </>

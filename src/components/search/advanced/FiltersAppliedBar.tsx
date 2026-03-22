@@ -7,6 +7,7 @@ import { ChevronDown } from "lucide-react";
 type Props = {
   mode: SearchMode;
   lang: LangFilter;
+  defaultLang: LangFilter;
   onEdit: () => void;
   translations: {
     filtersApplied: string;
@@ -14,15 +15,16 @@ type Props = {
     matchSmart: string;
     matchKeyword: string;
     matchExact: string;
-    langAny: string;
-    langZhOnly: string;
-    langEnOnly: string;
+    langZhTw: string;
+    langZhCn: string;
+    langEn: string;
+    langZhBoth: string;
   };
 };
 
-export function FiltersAppliedBar({ mode, lang, onEdit, translations }: Props) {
+export function FiltersAppliedBar({ mode, lang, defaultLang, onEdit, translations }: Props) {
   // Hide when using default filters
-  if (mode === "hybrid" && lang === "hybrid") {
+  if (mode === "hybrid" && lang === defaultLang) {
     return null;
   }
 
@@ -33,19 +35,22 @@ export function FiltersAppliedBar({ mode, lang, onEdit, translations }: Props) {
       ? translations.matchKeyword
       : translations.matchExact;
 
-  const langLabel =
-    lang === "hybrid"
-      ? translations.langAny
-      : lang === "zh"
-      ? translations.langZhOnly
-      : translations.langEnOnly;
+  const langLabels: Record<LangFilter, string> = {
+    "zh-tw": translations.langZhTw,
+    "zh-cn": translations.langZhCn,
+    "en": translations.langEn,
+    "zh-both": translations.langZhBoth,
+  };
 
   return (
-    <div className="flex items-center justify-between rounded-lg border bg-muted/50 px-4 py-3">
+    <div
+      data-testid="filters-applied-bar"
+      className="flex items-center justify-between rounded-lg border bg-muted/50 px-4 py-3"
+    >
       <div className="flex items-center gap-2 text-sm">
         <span className="text-muted-foreground">{translations.filtersApplied}</span>
         <span className="font-medium">
-          {modeLabel} · {langLabel}
+          {modeLabel} · {langLabels[lang]}
         </span>
       </div>
       <Button

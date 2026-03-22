@@ -15,9 +15,10 @@ type Props = {
   translations: {
     language: string;
     languageHelp: string;
-    langAny: string;
-    langZhOnly: string;
-    langEnOnly: string;
+    langZhTw: string;
+    langZhCn: string;
+    langEn: string;
+    langZhBoth: string;
   };
 };
 
@@ -35,9 +36,10 @@ export function LanguageFilterSection({ value, onChange, translations }: Props) 
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="hybrid">{translations.langAny}</SelectItem>
-          <SelectItem value="zh">{translations.langZhOnly}</SelectItem>
-          <SelectItem value="en">{translations.langEnOnly}</SelectItem>
+          <SelectItem value="zh-tw">{translations.langZhTw}</SelectItem>
+          <SelectItem value="zh-cn">{translations.langZhCn}</SelectItem>
+          <SelectItem value="en">{translations.langEn}</SelectItem>
+          <SelectItem value="zh-both">{translations.langZhBoth}</SelectItem>
         </SelectContent>
       </Select>
     </div>

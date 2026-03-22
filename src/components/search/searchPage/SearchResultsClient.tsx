@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { EpisodeResultCard } from "./EpisodeResultCard";
 import { Pagination } from "./Pagination";
-import type { Episode } from "@/types/search";
+import type { Episode, LangFilter } from "@/types/search";
 
 type Props = {
   episodes: Episode[];
@@ -12,6 +12,10 @@ type Props = {
   page: number;
   pageSize: number;
   query: string;
+  // Phase 3 click log props — passed to EpisodeResultCard in Step 7
+  searchRequestId: string | null;
+  searchResultTimestamp: number | null;
+  selectedLang: LangFilter;
 };
 
 export function SearchResultsClient({
@@ -20,6 +24,9 @@ export function SearchResultsClient({
   page,
   pageSize,
   query,
+  searchRequestId,
+  searchResultTimestamp,
+  selectedLang,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();

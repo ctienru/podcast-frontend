@@ -5,7 +5,7 @@ import { SearchError } from "@/components/search/SearchError";
 import { ShowsBanner } from "@/components/search/searchPage/ShowsBanner";
 import { searchEpisodesFromApi, searchShowsFromApi } from "@/lib/search";
 import { buildSearchItemListSchema } from "@/lib/schema";
-import type { Episode, Show, SearchMode } from "@/types/search";
+import type { Episode, Show, SearchMode, LangFilter } from "@/types/search";
 
 const EPISODE_PAGE_SIZE = 10;
 const SHOWS_PAGE_SIZE = 10;
@@ -16,6 +16,10 @@ type Props = {
   page: number;
   language?: string[];
   mode?: SearchMode;
+  // Phase 3 click log props — wired up in Step 7
+  searchRequestId: string | null;
+  searchResultTimestamp: number | null;
+  selectedLang: LangFilter;
 };
 
 export default async function SearchResultsSection({
@@ -23,6 +27,9 @@ export default async function SearchResultsSection({
   page,
   language,
   mode,
+  searchRequestId,
+  searchResultTimestamp,
+  selectedLang,
 }: Props) {
   let episodeResults: Episode[] = [];
   let episodeTotal = 0;
@@ -120,6 +127,9 @@ export default async function SearchResultsSection({
               page={page}
               pageSize={EPISODE_PAGE_SIZE}
               query={query}
+              searchRequestId={searchRequestId}
+              searchResultTimestamp={searchResultTimestamp}
+              selectedLang={selectedLang}
             />
           )}
         </>
