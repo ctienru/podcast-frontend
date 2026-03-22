@@ -13,6 +13,7 @@ type Props = {
   onToggle: () => void;
   currentMode: SearchMode;
   currentLang: LangFilter;
+  defaultLang: LangFilter;
   onApply: (mode: SearchMode, lang: LangFilter) => void;
   onReset: () => void;
   translations: {
@@ -29,9 +30,10 @@ type Props = {
     matchExactDesc: string;
     language: string;
     languageHelp: string;
-    langAny: string;
-    langZhOnly: string;
-    langEnOnly: string;
+    langZhTw: string;
+    langZhCn: string;
+    langEn: string;
+    langZhBoth: string;
     applyFilters: string;
     reset: string;
   };
@@ -42,6 +44,7 @@ export function AdvancedSearchPanel({
   onToggle,
   currentMode,
   currentLang,
+  defaultLang,
   onApply,
   onReset,
   translations,
@@ -70,7 +73,7 @@ export function AdvancedSearchPanel({
 
   const handleReset = () => {
     setDraftMode("hybrid");
-    setDraftLang("hybrid");
+    setDraftLang(defaultLang);
     onReset();
     onToggle(); // Close panel after reset
   };
@@ -120,9 +123,10 @@ export function AdvancedSearchPanel({
             translations={{
               language: translations.language,
               languageHelp: translations.languageHelp,
-              langAny: translations.langAny,
-              langZhOnly: translations.langZhOnly,
-              langEnOnly: translations.langEnOnly,
+              langZhTw: translations.langZhTw,
+              langZhCn: translations.langZhCn,
+              langEn: translations.langEn,
+              langZhBoth: translations.langZhBoth,
             }}
           />
 

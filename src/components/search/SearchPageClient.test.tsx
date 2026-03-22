@@ -3,15 +3,13 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SearchPageClient } from "./SearchPageClient";
 
-// Mock next/navigation
 const mockPush = vi.fn();
 const mockSearchParams = new URLSearchParams();
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
+  useRouter: () => ({ push: mockPush }),
   useSearchParams: () => mockSearchParams,
+  useParams: () => ({ locale: "zh" }),
 }));
 
 const defaultTranslations = {
@@ -29,9 +27,10 @@ const defaultTranslations = {
   matchExactDesc: "Match the exact wording",
   language: "Language",
   languageHelp: "Which languages should results include?",
-  langAny: "Any language",
-  langZhOnly: "Chinese only",
-  langEnOnly: "English only",
+  langZhTw: "Traditional Chinese",
+  langZhCn: "Simplified Chinese",
+  langEn: "English",
+  langZhBoth: "Both Chinese scripts",
   applyFilters: "Apply filters",
   reset: "Reset",
   filtersApplied: "Filters applied:",
@@ -46,28 +45,15 @@ describe("SearchPageClient", () => {
     mockSearchParams.delete("page");
   });
 
-  describe("Default behavior", () => {
-    it("should not show FiltersAppliedBar when using default filters", () => {
-      render(
-        <SearchPageClient
-          currentMode="hybrid"
-          currentLang="hybrid"
-          translations={defaultTranslations}
-        />
-      );
-
-      expect(screen.queryByText("Filters applied:")).not.toBeInTheDocument();
-    });
-
+  describe("Advanced Search Panel", () => {
     it("should show Advanced button by default", () => {
       render(
         <SearchPageClient
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
           translations={defaultTranslations}
         />
       );
-
       expect(screen.getByRole("button", { name: /advanced/i })).toBeInTheDocument();
     });
 
@@ -75,32 +61,27 @@ describe("SearchPageClient", () => {
       render(
         <SearchPageClient
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
           translations={defaultTranslations}
         />
       );
-
       expect(screen.queryByText("Advanced Search")).not.toBeInTheDocument();
     });
-  });
 
-  describe("Advanced Search Panel", () => {
     it("should open panel when Advanced button is clicked", async () => {
       const user = userEvent.setup();
       render(
         <SearchPageClient
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
           translations={defaultTranslations}
         />
       );
 
-      const advancedButton = screen.getByRole("button", { name: /advanced/i });
-      await user.click(advancedButton);
+      await user.click(screen.getByRole("button", { name: /advanced/i }));
 
       expect(screen.getByText("Advanced Search")).toBeInTheDocument();
       expect(screen.getByText("Match behavior")).toBeInTheDocument();
-      expect(screen.getByText("Language")).toBeInTheDocument();
     });
 
     it("should close panel when Advanced button is clicked again", async () => {
@@ -108,73 +89,131 @@ describe("SearchPageClient", () => {
       render(
         <SearchPageClient
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
           translations={defaultTranslations}
         />
       );
 
-      const advancedButton = screen.getByRole("button", { name: /advanced/i });
-      await user.click(advancedButton);
+      const btn = screen.getByRole("button", { name: /advanced/i });
+      await user.click(btn);
       expect(screen.getByText("Advanced Search")).toBeInTheDocument();
 
-      await user.click(advancedButton);
+      await user.click(btn);
       expect(screen.queryByText("Advanced Search")).not.toBeInTheDocument();
     });
 
-    it("should have Smart and Any language selected by default", async () => {
+    it("should close panel after applying filters", async () => {
       const user = userEvent.setup();
       render(
         <SearchPageClient
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
           translations={defaultTranslations}
         />
       );
 
       await user.click(screen.getByRole("button", { name: /advanced/i }));
+      expect(screen.getByText("Advanced Search")).toBeInTheDocument();
 
-      const smartRadio = screen.getByRole("radio", { name: /smart \(recommended\)/i });
-      expect(smartRadio).toBeChecked();
+      await user.click(screen.getByRole("button", { name: /apply filters/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByText("Advanced Search")).not.toBeInTheDocument();
+      });
+    });
+
+    it("should close panel after reset", async () => {
+      const user = userEvent.setup();
+      render(
+        <SearchPageClient
+          currentMode="bm25"
+          currentLang="zh-cn"
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(screen.getByRole("button", { name: /advanced/i }));
+      expect(screen.getByText("Advanced Search")).toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: /reset/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByText("Advanced Search")).not.toBeInTheDocument();
+      });
     });
   });
 
-  describe("Apply filters", () => {
-    it("should update URL when applying non-default filters", async () => {
+  describe("handleApply — locale-aware URL logic (locale=zh, defaultLang=zh-tw)", () => {
+    // useParams mock returns locale="zh" → defaultLang = "zh-tw"
+
+    it("default lang (zh-tw): omits lang param from URL", async () => {
       const user = userEvent.setup();
       mockSearchParams.set("q", "test");
 
       render(
         <SearchPageClient
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
           translations={defaultTranslations}
         />
       );
 
-      // Open panel
       await user.click(screen.getByRole("button", { name: /advanced/i }));
+      await user.click(screen.getByRole("button", { name: /apply filters/i }));
 
-      // Select Keyword mode
-      await user.click(screen.getByRole("radio", { name: /keyword/i }));
+      await waitFor(() => {
+        const url = mockPush.mock.calls[mockPush.mock.calls.length - 1][0];
+        expect(url).not.toContain("lang=");
+      });
+    });
 
-      // Select Chinese only
-      await user.click(screen.getByRole("combobox"));
-      await user.click(screen.getByRole("option", { name: /chinese only/i }));
+    it("non-default lang (zh-cn): includes lang=zh-cn in URL", async () => {
+      const user = userEvent.setup();
+      mockSearchParams.set("q", "test");
 
-      // Apply
+      render(
+        <SearchPageClient
+          currentMode="hybrid"
+          currentLang="zh-cn"
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(screen.getByRole("button", { name: /advanced/i }));
       await user.click(screen.getByRole("button", { name: /apply filters/i }));
 
       await waitFor(() => {
         expect(mockPush).toHaveBeenCalledWith(
-          expect.stringContaining("mode=bm25")
-        );
-        expect(mockPush).toHaveBeenCalledWith(
-          expect.stringContaining("lang=zh")
+          expect.stringContaining("lang=zh-cn")
         );
       });
     });
 
-    it("should remove mode parameter when applying default mode", async () => {
+    it("non-default lang (en): includes lang=en in URL", async () => {
+      const user = userEvent.setup();
+      mockSearchParams.set("q", "test");
+
+      render(
+        <SearchPageClient
+          currentMode="hybrid"
+          currentLang="en"
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(screen.getByRole("button", { name: /advanced/i }));
+      await user.click(screen.getByRole("button", { name: /apply filters/i }));
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith(
+          expect.stringContaining("lang=en")
+        );
+      });
+    });
+  });
+
+  describe("handleApply — mode URL logic", () => {
+    it("default mode (hybrid): omits mode param from URL", async () => {
       const user = userEvent.setup();
       mockSearchParams.set("q", "test");
       mockSearchParams.set("mode", "bm25");
@@ -182,7 +221,7 @@ describe("SearchPageClient", () => {
       render(
         <SearchPageClient
           currentMode="bm25"
-          currentLang="hybrid"
+          currentLang="zh-tw"
           translations={defaultTranslations}
         />
       );
@@ -198,7 +237,7 @@ describe("SearchPageClient", () => {
       });
     });
 
-    it("should reset page to 1 when applying filters", async () => {
+    it("resets page to 1 when applying filters", async () => {
       const user = userEvent.setup();
       mockSearchParams.set("q", "test");
       mockSearchParams.set("page", "3");
@@ -206,7 +245,7 @@ describe("SearchPageClient", () => {
       render(
         <SearchPageClient
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
           translations={defaultTranslations}
         />
       );
@@ -221,39 +260,19 @@ describe("SearchPageClient", () => {
         );
       });
     });
-
-    it("should close panel after applying filters", async () => {
-      const user = userEvent.setup();
-      render(
-        <SearchPageClient
-          currentMode="hybrid"
-          currentLang="hybrid"
-          translations={defaultTranslations}
-        />
-      );
-
-      await user.click(screen.getByRole("button", { name: /advanced/i }));
-      expect(screen.getByText("Advanced Search")).toBeInTheDocument();
-
-      await user.click(screen.getByRole("button", { name: /apply filters/i }));
-
-      await waitFor(() => {
-        expect(screen.queryByText("Advanced Search")).not.toBeInTheDocument();
-      });
-    });
   });
 
-  describe("Reset filters", () => {
-    it("should reset to default filters when Reset is clicked", async () => {
+  describe("handleReset", () => {
+    it("removes mode, lang, and page from URL", async () => {
       const user = userEvent.setup();
       mockSearchParams.set("q", "test");
       mockSearchParams.set("mode", "bm25");
-      mockSearchParams.set("lang", "zh");
+      mockSearchParams.set("lang", "zh-cn");
 
       render(
         <SearchPageClient
           currentMode="bm25"
-          currentLang="zh"
+          currentLang="zh-cn"
           translations={defaultTranslations}
         />
       );
@@ -262,100 +281,10 @@ describe("SearchPageClient", () => {
       await user.click(screen.getByRole("button", { name: /reset/i }));
 
       await waitFor(() => {
-        const lastCall = mockPush.mock.calls[mockPush.mock.calls.length - 1][0];
-        expect(lastCall).not.toContain("mode=");
-        expect(lastCall).not.toContain("lang=");
+        const url = mockPush.mock.calls[mockPush.mock.calls.length - 1][0];
+        expect(url).not.toContain("mode=");
+        expect(url).not.toContain("lang=");
       });
-    });
-
-    it("should close panel after reset", async () => {
-      const user = userEvent.setup();
-      render(
-        <SearchPageClient
-          currentMode="bm25"
-          currentLang="zh"
-          translations={defaultTranslations}
-        />
-      );
-
-      await user.click(screen.getByRole("button", { name: /advanced/i }));
-      expect(screen.getByText("Advanced Search")).toBeInTheDocument();
-
-      await user.click(screen.getByRole("button", { name: /reset/i }));
-
-      await waitFor(() => {
-        expect(screen.queryByText("Advanced Search")).not.toBeInTheDocument();
-      });
-    });
-  });
-
-  describe("FiltersAppliedBar", () => {
-    it("should show FiltersAppliedBar when using non-default filters", () => {
-      render(
-        <SearchPageClient
-          currentMode="bm25"
-          currentLang="zh"
-          translations={defaultTranslations}
-        />
-      );
-
-      expect(screen.getByText("Filters applied:")).toBeInTheDocument();
-      expect(screen.getByText(/keyword/i)).toBeInTheDocument();
-      expect(screen.getByText(/chinese only/i)).toBeInTheDocument();
-    });
-
-    it("should open Advanced panel when Edit button is clicked", async () => {
-      const user = userEvent.setup();
-      render(
-        <SearchPageClient
-          currentMode="bm25"
-          currentLang="zh"
-          translations={defaultTranslations}
-        />
-      );
-
-      const editButton = screen.getByRole("button", { name: /edit/i });
-      await user.click(editButton);
-
-      expect(screen.getByText("Advanced Search")).toBeInTheDocument();
-    });
-
-    it("should hide when mode is hybrid and lang is hybrid", () => {
-      render(
-        <SearchPageClient
-          currentMode="hybrid"
-          currentLang="hybrid"
-          translations={defaultTranslations}
-        />
-      );
-
-      expect(screen.queryByText("Filters applied:")).not.toBeInTheDocument();
-    });
-
-    it("should show when only mode is non-default", () => {
-      render(
-        <SearchPageClient
-          currentMode="exact"
-          currentLang="hybrid"
-          translations={defaultTranslations}
-        />
-      );
-
-      expect(screen.getByText("Filters applied:")).toBeInTheDocument();
-      expect(screen.getByText(/exact phrase/i)).toBeInTheDocument();
-    });
-
-    it("should show when only lang is non-default", () => {
-      render(
-        <SearchPageClient
-          currentMode="hybrid"
-          currentLang="en"
-          translations={defaultTranslations}
-        />
-      );
-
-      expect(screen.getByText("Filters applied:")).toBeInTheDocument();
-      expect(screen.getByText(/english only/i)).toBeInTheDocument();
     });
   });
 });

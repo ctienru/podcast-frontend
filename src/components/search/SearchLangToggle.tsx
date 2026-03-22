@@ -2,8 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-export type LangFilter = "en" | "zh" | "hybrid";
+import type { LangFilter } from "@/types/search";
 
 type Props = {
   currentLang: LangFilter;

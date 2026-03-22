@@ -1,8 +1,28 @@
 // Search modes for episode search
 export type SearchMode = "bm25" | "knn" | "hybrid" | "exact";
 
-// Language filter for search
-export type LangFilter = "en" | "zh" | "hybrid";
+/**
+ * Language filter selected by the user.
+ *
+ * - "zh-tw"   Traditional Chinese (targets podcast-episodes-zh-tw index)
+ * - "zh-cn"   Simplified Chinese  (targets podcast-episodes-zh-cn index)
+ * - "en"      English             (targets podcast-episodes-en index)
+ * - "zh-both" Both Chinese scripts (queries two indexes simultaneously, backend RRF merge, first 5 pages only)
+ */
+export type LangFilter = "zh-tw" | "zh-cn" | "en" | "zh-both";
+
+/**
+ * UI locale, matching next-intl routing config.
+ */
+export type AppLocale = "zh" | "en";
+
+/**
+ * Derives the default LangFilter from the URL locale.
+ * zh locale → zh-tw; anything else → en
+ */
+export function defaultLangForLocale(locale: AppLocale): LangFilter {
+  return locale === "zh" ? "zh-tw" : "en";
+}
 
 export type Show = {
   showId: string;

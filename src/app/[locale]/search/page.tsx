@@ -4,32 +4,14 @@ import { SearchBar } from "@/components/search/header/SearchBar";
 import SearchResultsSection from "@/components/search/searchPage/SearchResultsSection";
 import { SearchLoading } from "@/components/search/SearchLoading";
 import { SearchPageClient } from "@/components/search/SearchPageClient";
-import type { SearchMode, LangFilter } from "@/types/search";
+import type { SearchMode } from "@/types/search";
+import { getLangFilter, getLanguageArray } from "./utils";
 import type { Metadata } from "next";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ q?: string; page?: string; lang?: string; mode?: string }>;
 };
-
-function getLangFilter(langParam: string | undefined): LangFilter {
-  if (langParam === "en") return "en";
-  if (langParam === "zh") return "zh";
-  if (langParam === "hybrid") return "hybrid";
-  // Default to hybrid (any language)
-  return "hybrid";
-}
-
-function getLanguageArray(langFilter: LangFilter): string[] {
-  switch (langFilter) {
-    case "en":
-      return ["en"];
-    case "zh":
-      return ["zh-hant"];
-    case "hybrid":
-      return ["en", "zh-hant"];
-  }
-}
 
 function getSearchMode(modeParam: string | undefined): SearchMode {
   if (modeParam === "bm25") return "bm25";
@@ -50,7 +32,7 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
   const page = Math.max(1, Number(resolvedSearchParams.page ?? "1"));
   const hasQuery = query.length > 0;
 
-  const langFilter = getLangFilter(resolvedSearchParams.lang);
+  const langFilter = getLangFilter(resolvedSearchParams.lang, locale);
   const language = getLanguageArray(langFilter);
   const searchMode = getSearchMode(resolvedSearchParams.mode);
 
