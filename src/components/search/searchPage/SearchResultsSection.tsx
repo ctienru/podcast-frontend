@@ -31,10 +31,11 @@ export default async function SearchResultsSection({
   let schema: object | null = null;
   let searchRequestId: string | null = null;
   let searchResultTimestamp: number | null = null;
+  let degradedWarning: string | null = null;
 
   try {
     // Fetch episodes
-    const { result: episodes, searchRequestId: reqId } = await searchEpisodesFromApi({
+    const { result: episodes, searchRequestId: reqId, warning } = await searchEpisodesFromApi({
       query,
       page,
       pageSize: EPISODE_PAGE_SIZE,
@@ -45,6 +46,7 @@ export default async function SearchResultsSection({
     episodeResults = episodes.items;
     episodeTotal = episodes.total;
     searchRequestId = reqId || null;
+    degradedWarning = warning;
     // eslint-disable-next-line react-hooks/purity -- Server Component: Date.now() runs once on the server, not during client re-render
     searchResultTimestamp = Date.now();
 
@@ -117,6 +119,12 @@ export default async function SearchResultsSection({
             <ShowsBanner shows={showResults} />
           )}
 
+          {degradedWarning && (
+            <p role="status" className="text-sm text-muted-foreground px-1 pb-2">
+              ℹ️ Showing text-match results. Semantic search is temporarily unavailable.
+            </p>
+          )}
+
           {hasEpisodes && (
             <SearchResultsClient
               episodes={episodeResults}
@@ -126,7 +134,7 @@ export default async function SearchResultsSection({
               query={query}
               searchRequestId={searchRequestId}
               searchResultTimestamp={searchResultTimestamp}
-              selectedLang={selectedLang}
+              selectedLang={lang}
             />
           )}
         </>

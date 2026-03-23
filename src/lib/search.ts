@@ -136,7 +136,7 @@ export async function searchEpisodesFromApi({
   pageSize: number;
   lang: LangFilter;
   mode?: SearchMode;
-}): Promise<{ result: PagedResult<Episode>; searchRequestId: string }> {
+}): Promise<{ result: PagedResult<Episode>; searchRequestId: string; warning: string | null }> {
   const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
     `${apiBaseUrl}/search/episodes`,
@@ -165,9 +165,10 @@ export async function searchEpisodesFromApi({
 
   const json = await res.json();
   const searchRequestId: string = json.searchRequestId ?? "";
+  const warning: string | null = json.status === "partial_success" ? (json.warning ?? null) : null;
   const result = ensureOkApiResponse<Episode>(json, page, pageSize);
 
-  return { result, searchRequestId };
+  return { result, searchRequestId, warning };
 }
 
 /* =========================
