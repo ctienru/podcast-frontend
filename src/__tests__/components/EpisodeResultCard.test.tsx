@@ -1,7 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { EpisodeResultCard } from "@/components/search/searchPage/EpisodeResultCard";
 import type { Episode } from "@/types/search";
+
+const defaultClickLogProps = {
+  rank: 1,
+  searchRequestId: null as string | null,
+  searchResultTimestamp: null as number | null,
+  query: "test",
+  selectedLang: "zh-tw" as const,
+};
 
 // Mock clipboard
 beforeEach(() => {
@@ -9,7 +17,12 @@ beforeEach(() => {
     clipboard: {
       writeText: vi.fn().mockResolvedValue(undefined),
     },
+    sendBeacon: vi.fn().mockReturnValue(true),
   });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 const createMockEpisode = (overrides?: Partial<Episode>): Episode => ({
@@ -19,6 +32,7 @@ const createMockEpisode = (overrides?: Partial<Episode>): Episode => ({
   publishedAt: new Date().toISOString(),
   durationSec: 3600,
   imageUrl: "https://example.com/episode.jpg",
+  language: "zh-tw",
   podcast: {
     showId: "show-123",
     title: "Test Podcast",
@@ -35,28 +49,28 @@ describe("EpisodeResultCard", () => {
   describe("basic rendering", () => {
     it("should render episode title", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText("Test Episode Title")).toBeInTheDocument();
     });
 
     it("should render podcast title", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText("Test Podcast")).toBeInTheDocument();
     });
 
     it("should render publisher", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText(/Test Publisher/)).toBeInTheDocument();
     });
 
     it("should render description", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(
         screen.getByText("This is a test episode description")
@@ -71,7 +85,7 @@ describe("EpisodeResultCard", () => {
           title: ["<em>Highlighted</em> Title"],
         },
       });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const mark = screen.getByText("Highlighted");
       expect(mark.tagName).toBe("MARK");
@@ -83,7 +97,7 @@ describe("EpisodeResultCard", () => {
           description: ["Description with <em>keyword</em>"],
         },
       });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const mark = screen.getByText("keyword");
       expect(mark.tagName).toBe("MARK");
@@ -95,7 +109,7 @@ describe("EpisodeResultCard", () => {
           title: ["<em>First</em> and <em>Second</em> highlights"],
         },
       });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText("First")).toBeInTheDocument();
       expect(screen.getByText("Second")).toBeInTheDocument();
@@ -105,14 +119,14 @@ describe("EpisodeResultCard", () => {
   describe("duration formatting", () => {
     it("should format duration in minutes", () => {
       const episode = createMockEpisode({ durationSec: 1800 });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText(/30 min/)).toBeInTheDocument();
     });
 
     it("should handle 0 duration", () => {
       const episode = createMockEpisode({ durationSec: 0 });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       // 0 seconds returns null from formatDuration, so no "min" should appear
       // Note: The actual format shows "0 min" because 0/60 = 0
@@ -121,7 +135,7 @@ describe("EpisodeResultCard", () => {
 
     it("should handle undefined duration", () => {
       const episode = createMockEpisode({ durationSec: undefined });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       // Should not throw, just not render duration
       expect(screen.getByText("Test Episode Title")).toBeInTheDocument();
@@ -132,7 +146,7 @@ describe("EpisodeResultCard", () => {
     it("should show relative time for recent dates", () => {
       const recentDate = new Date(Date.now() - 30 * 60 * 1000).toISOString();
       const episode = createMockEpisode({ publishedAt: recentDate });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText(/min ago/)).toBeInTheDocument();
     });
@@ -140,7 +154,7 @@ describe("EpisodeResultCard", () => {
     it("should show hours ago for dates within 24 hours", () => {
       const hoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
       const episode = createMockEpisode({ publishedAt: hoursAgo });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText(/hours ago/)).toBeInTheDocument();
     });
@@ -148,7 +162,7 @@ describe("EpisodeResultCard", () => {
     it("should show days ago for dates within a week", () => {
       const daysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
       const episode = createMockEpisode({ publishedAt: daysAgo });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText(/days ago/)).toBeInTheDocument();
     });
@@ -157,7 +171,7 @@ describe("EpisodeResultCard", () => {
   describe("image handling", () => {
     it("should display episode image when available", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const img = screen.getByRole("img");
       expect(img).toHaveAttribute("src", "https://example.com/episode.jpg");
@@ -165,7 +179,7 @@ describe("EpisodeResultCard", () => {
 
     it("should fallback to podcast image when episode image is missing", () => {
       const episode = createMockEpisode({ imageUrl: undefined });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const img = screen.getByRole("img");
       expect(img).toHaveAttribute("src", "https://example.com/podcast.jpg");
@@ -181,7 +195,7 @@ describe("EpisodeResultCard", () => {
           imageUrl: undefined,
         },
       });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const img = screen.getByRole("img");
       expect(img).toHaveAttribute("src", "/placeholder-podcast.svg");
@@ -189,7 +203,7 @@ describe("EpisodeResultCard", () => {
 
     it("should use placeholder on image error", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const img = screen.getByRole("img");
       fireEvent.error(img);
@@ -199,7 +213,7 @@ describe("EpisodeResultCard", () => {
 
     it("should have alt text from podcast title", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const img = screen.getByRole("img");
       expect(img).toHaveAttribute("alt", "Test Podcast");
@@ -209,7 +223,7 @@ describe("EpisodeResultCard", () => {
   describe("external link", () => {
     it("should link to Apple Podcasts", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const link = screen.getByRole("link");
       expect(link).toHaveAttribute(
@@ -220,7 +234,7 @@ describe("EpisodeResultCard", () => {
 
     it("should open in new tab", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const link = screen.getByRole("link");
       expect(link).toHaveAttribute("target", "_blank");
@@ -229,7 +243,7 @@ describe("EpisodeResultCard", () => {
 
     it("should have accessible label", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       const link = screen.getByRole("link");
       expect(link).toHaveAttribute(
@@ -242,7 +256,7 @@ describe("EpisodeResultCard", () => {
   describe("copy functionality", () => {
     it("should have copyable title", () => {
       const episode = createMockEpisode();
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       // CopyableTitle should be rendered with role="button"
       const copyableElements = screen.getAllByRole("button");
@@ -256,10 +270,91 @@ describe("EpisodeResultCard", () => {
         description: undefined,
         highlights: undefined,
       });
-      render(<EpisodeResultCard episode={episode} />);
+      render(<EpisodeResultCard episode={episode} {...defaultClickLogProps} />);
 
       expect(screen.getByText("Test Episode Title")).toBeInTheDocument();
       // Should not throw
+    });
+  });
+
+  describe("click log — sendBeacon", () => {
+    it("有 searchRequestId 時點擊卡片送出 beacon", () => {
+      const episode = createMockEpisode();
+      render(
+        <EpisodeResultCard
+          episode={episode}
+          rank={1}
+          searchRequestId="req-abc"
+          searchResultTimestamp={Date.now() - 3000}
+          query="人工智慧"
+          selectedLang="zh-tw"
+        />
+      );
+
+      fireEvent.click(screen.getByRole("article"));
+
+      expect(navigator.sendBeacon).toHaveBeenCalledWith(
+        "/api/log/click",
+        expect.stringContaining('"requestId":"req-abc"')
+      );
+    });
+
+    it("beacon payload 包含 query 和 rank", () => {
+      const episode = createMockEpisode();
+      render(
+        <EpisodeResultCard
+          episode={episode}
+          rank={3}
+          searchRequestId="req-xyz"
+          searchResultTimestamp={Date.now() - 2000}
+          query="podcast搜尋"
+          selectedLang="en"
+        />
+      );
+
+      fireEvent.click(screen.getByRole("article"));
+
+      const call = (navigator.sendBeacon as ReturnType<typeof vi.fn>).mock.calls[0];
+      const payload = JSON.parse(call[1]);
+      expect(payload.query).toBe("podcast搜尋");
+      expect(payload.clickedRank).toBe(3);
+      expect(payload.selectedLang).toBe("en");
+    });
+
+    it("searchRequestId 為 null 時不送出 beacon", () => {
+      const episode = createMockEpisode();
+      render(
+        <EpisodeResultCard
+          episode={episode}
+          rank={1}
+          searchRequestId={null}
+          searchResultTimestamp={null}
+          query="test"
+          selectedLang="zh-tw"
+        />
+      );
+
+      fireEvent.click(screen.getByRole("article"));
+
+      expect(navigator.sendBeacon).not.toHaveBeenCalled();
+    });
+
+    it("searchResultTimestamp 為 null 時不送出 beacon", () => {
+      const episode = createMockEpisode();
+      render(
+        <EpisodeResultCard
+          episode={episode}
+          rank={1}
+          searchRequestId="req-123"
+          searchResultTimestamp={null}
+          query="test"
+          selectedLang="zh-tw"
+        />
+      );
+
+      fireEvent.click(screen.getByRole("article"));
+
+      expect(navigator.sendBeacon).not.toHaveBeenCalled();
     });
   });
 });

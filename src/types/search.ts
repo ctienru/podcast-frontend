@@ -52,6 +52,7 @@ export type Episode = {
   publishedAt: string;        // ISO 8601
   durationSec?: number;
   imageUrl?: string;
+  language?: string;          // language index: "zh-tw" | "zh-cn" | "en"
 
   podcast: {
     showId: string;

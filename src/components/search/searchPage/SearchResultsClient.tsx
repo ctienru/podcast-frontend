@@ -43,9 +43,16 @@ export function SearchResultsClient({
     <div className="space-y-6">
       {/* Episodes */}
       <ul className="space-y-6" role="list">
-        {episodes.map((episode) => (
+        {episodes.map((episode, index) => (
           <li key={episode.episodeId}>
-            <EpisodeResultCard episode={episode} />
+            <EpisodeResultCard
+              episode={episode}
+              rank={index + 1}
+              searchRequestId={searchRequestId}
+              searchResultTimestamp={searchResultTimestamp}
+              query={query}
+              selectedLang={selectedLang}
+            />
           </li>
         ))}
       </ul>

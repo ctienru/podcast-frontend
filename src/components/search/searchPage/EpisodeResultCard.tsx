@@ -3,7 +3,8 @@
 import { useState, useSyncExternalStore } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CopyableTitle } from "@/components/CopyableTitle";
-import type { Episode } from "@/types/search";
+import { buildClickLogPayload } from "@/lib/analytics";
+import type { Episode, LangFilter } from "@/types/search";
 
 const PLACEHOLDER_IMAGE = "/placeholder-podcast.svg";
 
@@ -23,6 +24,11 @@ function subscribe() {
 
 type Props = {
   episode: Episode;
+  rank: number;
+  searchRequestId: string | null;
+  searchResultTimestamp: number | null;
+  query: string;
+  selectedLang: LangFilter;
 };
 
 /* =========================
@@ -94,7 +100,14 @@ function formatRelativeDate(iso: string) {
 /* =========================
  * Component
  * ========================= */
-export function EpisodeResultCard({ episode }: Props) {
+export function EpisodeResultCard({
+  episode,
+  rank,
+  searchRequestId,
+  searchResultTimestamp,
+  query,
+  selectedLang,
+}: Props) {
   const {
     title,
     description,
@@ -102,8 +115,25 @@ export function EpisodeResultCard({ episode }: Props) {
     publishedAt,
     durationSec,
     imageUrl,
+    language,
     podcast,
   } = episode;
+
+  function handleClick() {
+    if (!searchRequestId || !searchResultTimestamp) return;
+
+    const payload = buildClickLogPayload({
+      requestId: searchRequestId,
+      query,
+      selectedLang,
+      episode: { episodeId: episode.episodeId, language: language ?? "unknown" },
+      rank,
+      searchResultTimestamp,
+      clickTimestamp: Date.now(),
+    });
+
+    navigator.sendBeacon("/api/log/click", JSON.stringify(payload));
+  }
 
   // Image fallback: episode → podcast → placeholder
   const initialImage = imageUrl || podcast.imageUrl || PLACEHOLDER_IMAGE;
@@ -120,7 +150,7 @@ export function EpisodeResultCard({ episode }: Props) {
   return (
     <Card>
       <CardContent className="p-4">
-        <article className="flex gap-4 overflow-hidden">
+        <article role="article" className="flex gap-4 overflow-hidden" onClick={handleClick}>
           {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
           <img
             src={imgSrc}
