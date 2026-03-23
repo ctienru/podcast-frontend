@@ -14,41 +14,38 @@ const MIN_QUERY_LENGTH = 2;
 type Props = {
   query: string;
   page: number;
-  language?: string[];
+  lang: LangFilter;
   mode?: SearchMode;
-  // Phase 3 click log props — wired up in Step 7
-  searchRequestId: string | null;
-  searchResultTimestamp: number | null;
-  selectedLang: LangFilter;
 };
 
 export default async function SearchResultsSection({
   query,
   page,
-  language,
+  lang,
   mode,
-  searchRequestId,
-  searchResultTimestamp,
-  selectedLang,
 }: Props) {
   let episodeResults: Episode[] = [];
   let episodeTotal = 0;
   let showResults: Show[] = [];
   let error: string | null = null;
   let schema: object | null = null;
+  let searchRequestId: string | null = null;
+  let searchResultTimestamp: number | null = null;
 
   try {
     // Fetch episodes
-    const episodes = await searchEpisodesFromApi({
+    const { result: episodes, searchRequestId: reqId } = await searchEpisodesFromApi({
       query,
       page,
       pageSize: EPISODE_PAGE_SIZE,
-      language,
+      lang,
       mode,
     });
 
     episodeResults = episodes.items;
     episodeTotal = episodes.total;
+    searchRequestId = reqId || null;
+    searchResultTimestamp = Date.now();
 
     // Fetch shows only on first page, always use hybrid mode
     if (page === 1) {
@@ -56,7 +53,6 @@ export default async function SearchResultsSection({
         const shows = await searchShowsFromApi({
           query,
           pageSize: SHOWS_PAGE_SIZE,
-          language,
           mode: "hybrid", // Always use hybrid for shows
         });
 

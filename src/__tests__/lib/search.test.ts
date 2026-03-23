@@ -136,6 +136,7 @@ describe("searchEpisodesFromApi", () => {
   it("should return PagedResult with correct pagination", async () => {
     const mockResponse = {
       status: "ok",
+      searchRequestId: "req-abc",
       data: {
         items: [
           {
@@ -156,10 +157,11 @@ describe("searchEpisodesFromApi", () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await searchEpisodesFromApi({
+    const { result } = await searchEpisodesFromApi({
       query: "test",
       page: 2,
       pageSize: 10,
+      lang: "zh-tw",
     });
 
     expect(result.page).toBe(2);
@@ -174,22 +176,80 @@ describe("searchEpisodesFromApi", () => {
     });
 
     await expect(
-      searchEpisodesFromApi({ query: "test", page: 1, pageSize: 10 })
+      searchEpisodesFromApi({ query: "test", page: 1, pageSize: 10, lang: "zh-tw" })
     ).rejects.toThrow("Episode search API error: 404");
+  });
+
+  it("should return result and searchRequestId", async () => {
+    const mockResponse = {
+      status: "ok",
+      searchRequestId: "req-uuid-123",
+      data: {
+        items: [{ episodeId: "ep-1", title: "Ep", publishedAt: "2024-01-01", podcast: { showId: "s1", title: "P", publisher: "Pub" } }],
+        total: 1,
+        page: 1,
+        size: 10,
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+
+    const { result, searchRequestId } = await searchEpisodesFromApi({
+      query: "test",
+      page: 1,
+      pageSize: 10,
+      lang: "zh-tw",
+    });
+
+    expect(searchRequestId).toBe("req-uuid-123");
+    expect(result.items).toHaveLength(1);
+    expect(result.total).toBe(1);
+  });
+
+  it("should send lang as single string, not language array", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: "ok", searchRequestId: "r1", data: {} }),
+    });
+
+    await searchEpisodesFromApi({ query: "test", page: 1, pageSize: 10, lang: "zh-cn" });
+
+    const body = JSON.parse(
+      (mockFetch.mock.calls[0][1] as { body: string }).body
+    );
+    expect(body.lang).toBe("zh-cn");
+    expect(body.language).toBeUndefined();
+  });
+
+  it("should send zh-both correctly", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: "ok", searchRequestId: "r2", data: {} }),
+    });
+
+    await searchEpisodesFromApi({ query: "test", page: 1, pageSize: 10, lang: "zh-both" });
+
+    const body = JSON.parse(
+      (mockFetch.mock.calls[0][1] as { body: string }).body
+    );
+    expect(body.lang).toBe("zh-both");
   });
 
   it("should pass page parameter correctly", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ status: "ok", data: {} }),
+      json: () => Promise.resolve({ status: "ok", searchRequestId: "r3", data: {} }),
     });
 
-    await searchEpisodesFromApi({ query: "search", page: 3, pageSize: 20 });
+    await searchEpisodesFromApi({ query: "search", page: 3, pageSize: 20, lang: "en" });
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        body: JSON.stringify({ q: "search", page: 3, size: 20 }),
+        body: JSON.stringify({ q: "search", page: 3, size: 20, lang: "en" }),
       })
     );
   });
@@ -197,20 +257,15 @@ describe("searchEpisodesFromApi", () => {
   it("should pass mode parameter when provided", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ status: "ok", data: {} }),
+      json: () => Promise.resolve({ status: "ok", searchRequestId: "r4", data: {} }),
     });
 
-    await searchEpisodesFromApi({
-      query: "test",
-      page: 1,
-      pageSize: 10,
-      mode: "exact",
-    });
+    await searchEpisodesFromApi({ query: "test", page: 1, pageSize: 10, lang: "zh-tw", mode: "exact" });
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        body: JSON.stringify({ q: "test", page: 1, size: 10, mode: "exact" }),
+        body: JSON.stringify({ q: "test", page: 1, size: 10, lang: "zh-tw", mode: "exact" }),
       })
     );
   });
@@ -218,41 +273,15 @@ describe("searchEpisodesFromApi", () => {
   it("should pass bm25 mode correctly", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ status: "ok", data: {} }),
+      json: () => Promise.resolve({ status: "ok", searchRequestId: "r5", data: {} }),
     });
 
-    await searchEpisodesFromApi({
-      query: "keyword search",
-      page: 1,
-      pageSize: 10,
-      mode: "bm25",
-    });
+    await searchEpisodesFromApi({ query: "keyword search", page: 1, pageSize: 10, lang: "zh-tw", mode: "bm25" });
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        body: JSON.stringify({ q: "keyword search", page: 1, size: 10, mode: "bm25" }),
-      })
-    );
-  });
-
-  it("should pass hybrid mode correctly", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ status: "ok", data: {} }),
-    });
-
-    await searchEpisodesFromApi({
-      query: "semantic search",
-      page: 1,
-      pageSize: 10,
-      mode: "hybrid",
-    });
-
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        body: JSON.stringify({ q: "semantic search", page: 1, size: 10, mode: "hybrid" }),
+        body: JSON.stringify({ q: "keyword search", page: 1, size: 10, lang: "zh-tw", mode: "bm25" }),
       })
     );
   });
@@ -260,47 +289,15 @@ describe("searchEpisodesFromApi", () => {
   it("should not include mode when undefined", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ status: "ok", data: {} }),
+      json: () => Promise.resolve({ status: "ok", searchRequestId: "r6", data: {} }),
     });
 
-    await searchEpisodesFromApi({
-      query: "test",
-      page: 1,
-      pageSize: 10,
-    });
+    await searchEpisodesFromApi({ query: "test", page: 1, pageSize: 10, lang: "en" });
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        body: JSON.stringify({ q: "test", page: 1, size: 10 }),
-      })
-    );
-  });
-
-  it("should pass both language and mode parameters", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ status: "ok", data: {} }),
-    });
-
-    await searchEpisodesFromApi({
-      query: "test",
-      page: 1,
-      pageSize: 10,
-      language: ["en"],
-      mode: "exact",
-    });
-
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        body: JSON.stringify({
-          q: "test",
-          page: 1,
-          size: 10,
-          language: ["en"],
-          mode: "exact",
-        }),
+        body: JSON.stringify({ q: "test", page: 1, size: 10, lang: "en" }),
       })
     );
   });

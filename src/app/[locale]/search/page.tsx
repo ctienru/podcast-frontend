@@ -5,7 +5,7 @@ import SearchResultsSection from "@/components/search/searchPage/SearchResultsSe
 import { SearchLoading } from "@/components/search/SearchLoading";
 import { SearchPageClient } from "@/components/search/SearchPageClient";
 import type { SearchMode } from "@/types/search";
-import { getLangFilter, getLanguageArray } from "./utils";
+import { getLangFilter } from "./utils";
 import type { Metadata } from "next";
 
 type PageProps = {
@@ -33,7 +33,6 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
   const hasQuery = query.length > 0;
 
   const langFilter = getLangFilter(resolvedSearchParams.lang, locale);
-  const language = getLanguageArray(langFilter);
   const searchMode = getSearchMode(resolvedSearchParams.mode);
 
   const advancedTranslations = {
@@ -76,11 +75,8 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
               key={`${query}:${page}:${langFilter}:${searchMode}`}
               query={query}
               page={page}
-              language={language}
+              lang={langFilter}
               mode={searchMode}
-              searchRequestId={null}
-              searchResultTimestamp={null}
-              selectedLang={langFilter}
             />
           </Suspense>
         </>

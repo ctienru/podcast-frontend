@@ -1,4 +1,4 @@
-import type { Show, Episode, PagedResult, RankingsResult, SearchMode, ShowDetail } from "@/types/search";
+import type { Show, Episode, PagedResult, RankingsResult, SearchMode, ShowDetail, LangFilter } from "@/types/search";
 
 /* =========================
  * Error
@@ -128,15 +128,15 @@ export async function searchEpisodesFromApi({
   query,
   page,
   pageSize,
-  language,
+  lang,
   mode,
 }: {
   query: string;
   page: number;
   pageSize: number;
-  language?: string[];
+  lang: LangFilter;
   mode?: SearchMode;
-}): Promise<PagedResult<Episode>> {
+}): Promise<{ result: PagedResult<Episode>; searchRequestId: string }> {
   const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
     `${apiBaseUrl}/search/episodes`,
@@ -150,7 +150,7 @@ export async function searchEpisodesFromApi({
         q: query,
         page,
         size: pageSize,
-        ...(language?.length && { language }),
+        lang,
         ...(mode && { mode }),
       }),
     }
@@ -164,8 +164,10 @@ export async function searchEpisodesFromApi({
   }
 
   const json = await res.json();
+  const searchRequestId: string = json.searchRequestId ?? "";
+  const result = ensureOkApiResponse<Episode>(json, page, pageSize);
 
-  return ensureOkApiResponse<Episode>(json, page, pageSize);
+  return { result, searchRequestId };
 }
 
 /* =========================
