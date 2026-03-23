@@ -45,6 +45,7 @@ export default async function SearchResultsSection({
     episodeResults = episodes.items;
     episodeTotal = episodes.total;
     searchRequestId = reqId || null;
+    // eslint-disable-next-line react-hooks/purity -- Server Component: Date.now() runs once on the server, not during client re-render
     searchResultTimestamp = Date.now();
 
     // Fetch shows only on first page, always use hybrid mode
