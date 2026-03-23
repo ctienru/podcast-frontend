@@ -22,8 +22,11 @@ export function buildClickLogPayload(
     clickedEpisodeId: input.episode.episodeId,
     clickedRank: input.rank,
     clickedLanguage: input.episode.language,
-    timeToClickSec: Math.round(
-      (input.clickTimestamp - input.searchResultTimestamp) / 1000
+    timeToClickSec: Math.max(
+      0,
+      Math.floor(
+        (input.clickTimestamp - input.searchResultTimestamp) / 1000
+      )
     ),
   };
 }

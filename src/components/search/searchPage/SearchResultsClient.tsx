@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { EpisodeResultCard } from "./EpisodeResultCard";
@@ -14,7 +15,6 @@ type Props = {
   query: string;
   // Phase 3 click log props — passed to EpisodeResultCard in Step 7
   searchRequestId: string | null;
-  searchResultTimestamp: number | null;
   selectedLang: LangFilter;
 };
 
@@ -25,9 +25,13 @@ export function SearchResultsClient({
   pageSize,
   query,
   searchRequestId,
-  searchResultTimestamp,
   selectedLang,
 }: Props) {
+  const [searchResultTimestamp, setSearchResultTimestamp] = useState<number | null>(null);
+  useEffect(() => {
+    setSearchResultTimestamp(Date.now());
+  }, [searchRequestId]);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();

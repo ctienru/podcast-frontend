@@ -30,7 +30,6 @@ export default async function SearchResultsSection({
   let error: string | null = null;
   let schema: object | null = null;
   let searchRequestId: string | null = null;
-  let searchResultTimestamp: number | null = null;
   let degradedWarning: string | null = null;
 
   try {
@@ -47,8 +46,6 @@ export default async function SearchResultsSection({
     episodeTotal = episodes.total;
     searchRequestId = reqId || null;
     degradedWarning = warning;
-    // eslint-disable-next-line react-hooks/purity -- Server Component: Date.now() runs once on the server, not during client re-render
-    searchResultTimestamp = Date.now();
 
     // Fetch shows only on first page, always use hybrid mode
     if (page === 1) {
@@ -133,7 +130,6 @@ export default async function SearchResultsSection({
               pageSize={EPISODE_PAGE_SIZE}
               query={query}
               searchRequestId={searchRequestId}
-              searchResultTimestamp={searchResultTimestamp}
               selectedLang={lang}
             />
           )}
