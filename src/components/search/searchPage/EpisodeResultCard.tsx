@@ -155,7 +155,7 @@ export function EpisodeResultCard({
           className="flex gap-4 overflow-hidden"
           onClick={(event) => {
             const target = event.target as HTMLElement | null;
-            if (target && target.closest("a")) return;
+            if (target && target.closest("a, button, [role='button'], input, textarea, select")) return;
             handleClick();
           }}
         >

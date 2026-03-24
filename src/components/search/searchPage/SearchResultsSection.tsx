@@ -120,7 +120,8 @@ export default async function SearchResultsSection({
 
           {degradedWarning && (
             <p role="status" className="text-sm text-muted-foreground px-1 pb-2">
-              ℹ️ {degradedWarning}
+              <span aria-hidden="true" className="mr-1">ℹ️</span>
+              {degradedWarning}
             </p>
           )}
 
