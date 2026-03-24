@@ -29,7 +29,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       canonical: `/${locale}/rankings`,
       languages: {
         en: "/en/rankings",
-        zh: "/zh/rankings",
+        "zh-TW": "/zh-TW/rankings",
+        "zh-CN": "/zh-CN/rankings",
       },
     },
   };
@@ -38,7 +39,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function RankingsPage({ params, searchParams }: Props) {
   const { locale } = await params;
   const { country, type = "podcast" } = await searchParams;
-  const defaultCountry = locale === "zh" ? "tw" : "us";
+  const defaultCountry = locale === "zh-TW" ? "tw" : "us";
   const resolvedCountry = country ?? defaultCountry;
   setRequestLocale(locale);
 
@@ -61,7 +62,7 @@ export default async function RankingsPage({ params, searchParams }: Props) {
     ? {
         "@context": "https://schema.org",
         "@type": "ItemList",
-        name: locale === "zh" ? "Podcast 排行榜" : "Podcast Rankings",
+        name: locale.startsWith("zh") ? "Podcast 排行榜" : "Podcast Rankings",
         itemListElement: rankings.items.slice(0, 10).map((item, i) => ({
           "@type": "ListItem",
           position: item.rank ?? i + 1,

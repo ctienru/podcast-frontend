@@ -1,5 +1,5 @@
 import { defaultLangForLocale } from "@/types/search";
-import type { LangFilter } from "@/types/search";
+import type { AppLocale, LangFilter } from "@/types/search";
 
 /**
  * Converts the URL lang param into a LangFilter.
@@ -10,7 +10,7 @@ import type { LangFilter } from "@/types/search";
  * 3. Unknown or missing value — fall back to locale default
  *
  * @param langParam - the lang query param from the URL
- * @param locale    - current UI locale ("zh" | "en")
+ * @param locale    - current UI locale ("zh-TW" | "zh-CN" | "en")
  */
 export function getLangFilter(
   langParam: string | undefined,
@@ -24,10 +24,10 @@ export function getLangFilter(
 
   // v1 backward compatibility
   if (langParam === "zh")      return "zh-tw";
-  if (langParam === "hybrid")  return defaultLangForLocale(locale as "zh" | "en");
+  if (langParam === "hybrid")  return defaultLangForLocale(locale as AppLocale);
 
   // unknown or missing — derive from locale
-  return defaultLangForLocale(locale as "zh" | "en");
+  return defaultLangForLocale(locale as AppLocale);
 }
 
 /**

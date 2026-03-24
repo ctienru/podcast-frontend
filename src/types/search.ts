@@ -20,14 +20,16 @@ export type EpisodeLanguage = "zh-tw" | "zh-cn" | "en";
 /**
  * UI locale, matching next-intl routing config.
  */
-export type AppLocale = "zh" | "en";
+export type AppLocale = "zh-TW" | "zh-CN" | "en";
 
 /**
  * Derives the default LangFilter from the URL locale.
- * zh locale → zh-tw; anything else → en
+ * zh-TW → zh-tw; zh-CN → zh-cn; anything else → en
  */
 export function defaultLangForLocale(locale: AppLocale): LangFilter {
-  return locale === "zh" ? "zh-tw" : "en";
+  if (locale === "zh-TW") return "zh-tw";
+  if (locale === "zh-CN") return "zh-cn";
+  return "en";
 }
 
 export type Show = {

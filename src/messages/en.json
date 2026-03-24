@@ -47,7 +47,14 @@
     "applyFilters": "Apply filters",
     "reset": "Reset",
     "filtersApplied": "Filters applied:",
-    "editFilters": "Edit"
+    "editFilters": "Edit",
+    "tooShortTitle": "Search query too short",
+    "tooShortDescription": "Please enter at least {min} characters to search.",
+    "noEpisodesTitle": "No episodes found",
+    "noEpisodesDescription": "We found matching podcasts above, but no specific episodes for \"{query}\".",
+    "noResultsTitle": "No results found",
+    "noResultsWithQuery": "No podcasts or episodes match \"{query}\". Try a different keyword.",
+    "noResultsEmpty": "Try searching for podcasts or episodes."
   },
   "rankings": {
     "title": "Podcast Rankings",
@@ -71,7 +78,8 @@
   },
   "language": {
     "en": "EN",
-    "zh": "中文"
+    "zh-TW": "繁中",
+    "zh-CN": "简中"
   },
   "common": {
     "copySuccess": "Copied to clipboard",

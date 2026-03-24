@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: t("title"),
       description: t("tagline"),
       siteName: t("title"),
-      locale: locale === "zh" ? "zh_TW" : "en_US",
+      locale: locale === "zh-TW" ? "zh_TW" : locale === "zh-CN" ? "zh_CN" : "en_US",
       type: "website",
     },
     twitter: {
@@ -45,7 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${baseUrl}/${locale}`,
       languages: {
         en: `${baseUrl}/en`,
-        "zh-TW": `${baseUrl}/zh`,
+        "zh-TW": `${baseUrl}/zh-TW`,
+        "zh-CN": `${baseUrl}/zh-CN`,
       },
     },
   };

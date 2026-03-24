@@ -47,7 +47,14 @@
     "applyFilters": "套用篩選",
     "reset": "重設",
     "filtersApplied": "已套用篩選：",
-    "editFilters": "編輯"
+    "editFilters": "編輯",
+    "tooShortTitle": "搜尋字詞太短",
+    "tooShortDescription": "請輸入至少 {min} 個字元以搜尋。",
+    "noEpisodesTitle": "找不到單集",
+    "noEpisodesDescription": "上方找到相符的節目，但沒有找到「{query}」的單集。",
+    "noResultsTitle": "找不到結果",
+    "noResultsWithQuery": "找不到符合「{query}」的節目或單集，請嘗試其他關鍵字。",
+    "noResultsEmpty": "試著搜尋 Podcast 節目或單集。"
   },
   "rankings": {
     "title": "Podcast 排行榜",
@@ -71,7 +78,8 @@
   },
   "language": {
     "en": "EN",
-    "zh": "中文"
+    "zh-TW": "繁中",
+    "zh-CN": "簡中"
   },
   "common": {
     "copySuccess": "已複製到剪貼簿",

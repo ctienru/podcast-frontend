@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { defaultLangForLocale, type SearchMode, type LangFilter } from "@/types/search";
+import { defaultLangForLocale, type AppLocale, type SearchMode, type LangFilter } from "@/types/search";
 import { AdvancedSearchPanel } from "./advanced/AdvancedSearchPanel";
 import { FiltersAppliedBar } from "./advanced/FiltersAppliedBar";
 
@@ -41,7 +41,7 @@ export function SearchPageClient({ currentMode, currentLang, translations }: Pro
   const { locale } = useParams<{ locale: string }>();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-  const defaultLang: LangFilter = defaultLangForLocale(locale === "zh" ? "zh" : "en");
+  const defaultLang: LangFilter = defaultLangForLocale(locale as AppLocale);
 
   const handleApply = (mode: SearchMode, lang: LangFilter) => {
     const params = new URLSearchParams(searchParams.toString());

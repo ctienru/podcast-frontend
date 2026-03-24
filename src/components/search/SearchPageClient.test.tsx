@@ -9,7 +9,7 @@ const mockSearchParams = new URLSearchParams();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
   useSearchParams: () => mockSearchParams,
-  useParams: () => ({ locale: "zh" }),
+  useParams: () => ({ locale: "zh-TW" }),
 }));
 
 const defaultTranslations = {
@@ -143,8 +143,8 @@ describe("SearchPageClient", () => {
     });
   });
 
-  describe("handleApply — locale-aware URL logic (locale=zh, defaultLang=zh-tw)", () => {
-    // useParams mock returns locale="zh" → defaultLang = "zh-tw"
+  describe("handleApply — locale-aware URL logic (locale=zh-TW, defaultLang=zh-tw)", () => {
+    // useParams mock returns locale="zh-TW" → defaultLang = "zh-tw"
 
     it("default lang (zh-tw): omits lang param from URL", async () => {
       const user = userEvent.setup();
