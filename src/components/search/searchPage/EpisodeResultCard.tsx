@@ -123,7 +123,7 @@ export function EpisodeResultCard({
 
   function handleClick() {
     const searchResultTimestamp = searchResultTimestampRef.current;
-    if (!searchRequestId || !searchResultTimestamp || !language) return;
+    if (!searchRequestId || searchResultTimestamp === null || !language) return;
 
     const payload = buildClickLogPayload({
       requestId: searchRequestId,
@@ -135,7 +135,10 @@ export function EpisodeResultCard({
       clickTimestamp: Date.now(),
     });
 
-    navigator.sendBeacon("/api/log/click", JSON.stringify(payload));
+    navigator.sendBeacon(
+      `${process.env.NEXT_PUBLIC_SEARCH_API_BASE}/log/click`,
+      JSON.stringify(payload)
+    );
   }
 
   // Image fallback: episode → podcast → placeholder

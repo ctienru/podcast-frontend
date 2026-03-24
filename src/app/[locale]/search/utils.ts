@@ -33,9 +33,8 @@ export function getLangFilter(
 /**
  * Expands a LangFilter into a language array for UI display purposes.
  *
- * Note: not used for API requests. The API receives lang as a single string
- * (e.g. "zh-both") and handles index routing itself.
- * Use this when the UI needs to show which languages are being searched.
+ * Note: not used for the episode search API (which receives lang as a single
+ * string, e.g. "zh-both"). Used for the show search API and UI display.
  */
 export function getLanguageArray(langFilter: LangFilter): string[] {
   switch (langFilter) {
