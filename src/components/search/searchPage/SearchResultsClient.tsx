@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { EpisodeResultCard } from "./EpisodeResultCard";
@@ -27,11 +26,6 @@ export function SearchResultsClient({
   searchRequestId,
   selectedLang,
 }: Props) {
-  const [searchResultTimestamp, setSearchResultTimestamp] = useState<number | null>(Date.now());
-  useEffect(() => {
-    setSearchResultTimestamp(Date.now());
-  }, [searchRequestId]);
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -53,7 +47,6 @@ export function SearchResultsClient({
               episode={episode}
               rank={index + 1}
               searchRequestId={searchRequestId}
-              searchResultTimestamp={searchResultTimestamp}
               query={query}
               selectedLang={selectedLang}
             />

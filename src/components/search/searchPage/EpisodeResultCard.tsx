@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useRef, useEffect, useSyncExternalStore } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CopyableTitle } from "@/components/CopyableTitle";
 import { buildClickLogPayload } from "@/lib/analytics";
@@ -26,7 +26,6 @@ type Props = {
   episode: Episode;
   rank: number;
   searchRequestId: string | null;
-  searchResultTimestamp: number | null;
   query: string;
   selectedLang: LangFilter;
 };
@@ -104,10 +103,13 @@ export function EpisodeResultCard({
   episode,
   rank,
   searchRequestId,
-  searchResultTimestamp,
   query,
   selectedLang,
 }: Props) {
+  const searchResultTimestampRef = useRef<number | null>(null);
+  useEffect(() => {
+    searchResultTimestampRef.current = Date.now();
+  }, [searchRequestId]);
   const {
     title,
     description,
@@ -120,6 +122,7 @@ export function EpisodeResultCard({
   } = episode;
 
   function handleClick() {
+    const searchResultTimestamp = searchResultTimestampRef.current;
     if (!searchRequestId || !searchResultTimestamp || !language) return;
 
     const payload = buildClickLogPayload({

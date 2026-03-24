@@ -6,7 +6,6 @@ import type { Episode } from "@/types/search";
 const defaultClickLogProps = {
   rank: 1,
   searchRequestId: null as string | null,
-  searchResultTimestamp: null as number | null,
   query: "test",
   selectedLang: "zh-tw" as const,
 };
@@ -285,7 +284,6 @@ describe("EpisodeResultCard", () => {
           episode={episode}
           rank={1}
           searchRequestId="req-abc"
-          searchResultTimestamp={Date.now() - 3000}
           query="人工智慧"
           selectedLang="zh-tw"
         />
@@ -306,7 +304,6 @@ describe("EpisodeResultCard", () => {
           episode={episode}
           rank={3}
           searchRequestId="req-xyz"
-          searchResultTimestamp={Date.now() - 2000}
           query="podcast搜尋"
           selectedLang="en"
         />
@@ -328,25 +325,6 @@ describe("EpisodeResultCard", () => {
           episode={episode}
           rank={1}
           searchRequestId={null}
-          searchResultTimestamp={null}
-          query="test"
-          selectedLang="zh-tw"
-        />
-      );
-
-      fireEvent.click(screen.getByRole("article"));
-
-      expect(navigator.sendBeacon).not.toHaveBeenCalled();
-    });
-
-    it("searchResultTimestamp 為 null 時不送出 beacon", () => {
-      const episode = createMockEpisode();
-      render(
-        <EpisodeResultCard
-          episode={episode}
-          rank={1}
-          searchRequestId="req-123"
-          searchResultTimestamp={null}
           query="test"
           selectedLang="zh-tw"
         />
