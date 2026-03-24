@@ -27,7 +27,7 @@ export function SearchResultsClient({
   searchRequestId,
   selectedLang,
 }: Props) {
-  const [searchResultTimestamp, setSearchResultTimestamp] = useState<number | null>(null);
+  const [searchResultTimestamp, setSearchResultTimestamp] = useState<number | null>(Date.now());
   useEffect(() => {
     setSearchResultTimestamp(Date.now());
   }, [searchRequestId]);

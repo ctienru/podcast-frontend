@@ -120,13 +120,13 @@ export function EpisodeResultCard({
   } = episode;
 
   function handleClick() {
-    if (!searchRequestId || !searchResultTimestamp) return;
+    if (!searchRequestId || !searchResultTimestamp || !language) return;
 
     const payload = buildClickLogPayload({
       requestId: searchRequestId,
       query,
       selectedLang,
-      episode: { episodeId: episode.episodeId, language: language ?? "unknown" },
+      episode: { episodeId: episode.episodeId, language },
       rank,
       searchResultTimestamp,
       clickTimestamp: Date.now(),
@@ -150,7 +150,15 @@ export function EpisodeResultCard({
   return (
     <Card>
       <CardContent className="p-4">
-        <article role="article" className="flex gap-4 overflow-hidden" onClick={handleClick}>
+        <article
+          role="article"
+          className="flex gap-4 overflow-hidden"
+          onClick={(event) => {
+            const target = event.target as HTMLElement | null;
+            if (target && target.closest("a")) return;
+            handleClick();
+          }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
           <img
             src={imgSrc}

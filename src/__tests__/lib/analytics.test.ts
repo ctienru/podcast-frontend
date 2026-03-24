@@ -5,7 +5,7 @@ const baseInput = {
   requestId: "req-123",
   query: "人工智慧",
   selectedLang: "zh-tw" as const,
-  episode: { episodeId: "ep:apple:123:ep1", language: "zh-tw" },
+  episode: { episodeId: "ep:apple:123:ep1", language: "zh-tw" as const },
   rank: 2,
   searchResultTimestamp: 1000,
   clickTimestamp: 6000,

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { SearchMode, LangFilter, defaultLangForLocale } from "@/types/search";
+import { defaultLangForLocale, type SearchMode, type LangFilter } from "@/types/search";
 import { AdvancedSearchPanel } from "./advanced/AdvancedSearchPanel";
 import { FiltersAppliedBar } from "./advanced/FiltersAppliedBar";
 

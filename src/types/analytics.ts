@@ -1,4 +1,4 @@
-import type { LangFilter } from "@/types/search";
+import type { LangFilter, EpisodeLanguage } from "@/types/search";
 
 /**
  * Click log payload sent by the frontend via navigator.sendBeacon.
@@ -11,6 +11,6 @@ export type ClickLogPayload = {
   selectedLang: LangFilter;
   clickedEpisodeId: string;
   clickedRank: number;      // 1-indexed
-  clickedLanguage: string;  // language field of the clicked episode document
+  clickedLanguage: EpisodeLanguage;  // language field of the clicked episode document
   timeToClickSec: number;   // seconds from search result display to click
 };

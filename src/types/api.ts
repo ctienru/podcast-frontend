@@ -1,4 +1,6 @@
-import type { LangFilter } from "@/types/search";
+import type { LangFilter, EpisodeLanguage } from "@/types/search";
+
+export type { EpisodeLanguage };
 
 /**
  * Episode item returned by POST /api/search/episodes (v2).
@@ -12,8 +14,7 @@ export interface EpisodeDto {
   publishedAt: string;      // ISO 8601
   durationSec: number;
   imageUrl: string;
-  /** Language index this episode belongs to: "zh-tw" | "zh-cn" | "en" */
-  language: string;
+  language: EpisodeLanguage;
   podcast: {
     podcastId: string;
     title: string;

@@ -4,6 +4,7 @@ import { SearchEmpty } from "@/components/search/SearchEmpty";
 import { SearchError } from "@/components/search/SearchError";
 import { ShowsBanner } from "@/components/search/searchPage/ShowsBanner";
 import { searchEpisodesFromApi, searchShowsFromApi } from "@/lib/search";
+import { getLanguageArray } from "@/app/[locale]/search/utils";
 import { buildSearchItemListSchema } from "@/lib/schema";
 import type { Episode, Show, SearchMode, LangFilter } from "@/types/search";
 
@@ -53,6 +54,7 @@ export default async function SearchResultsSection({
         const shows = await searchShowsFromApi({
           query,
           pageSize: SHOWS_PAGE_SIZE,
+          language: getLanguageArray(lang),
           mode: "hybrid", // Always use hybrid for shows
         });
 
@@ -118,7 +120,7 @@ export default async function SearchResultsSection({
 
           {degradedWarning && (
             <p role="status" className="text-sm text-muted-foreground px-1 pb-2">
-              ℹ️ Showing text-match results. Semantic search is temporarily unavailable.
+              ℹ️ {degradedWarning}
             </p>
           )}
 

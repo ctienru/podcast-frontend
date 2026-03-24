@@ -12,6 +12,12 @@ export type SearchMode = "bm25" | "knn" | "hybrid" | "exact";
 export type LangFilter = "zh-tw" | "zh-cn" | "en" | "zh-both";
 
 /**
+ * Language index value stored on an episode document.
+ * Subset of LangFilter (excludes "zh-both", which is a query-time option only).
+ */
+export type EpisodeLanguage = "zh-tw" | "zh-cn" | "en";
+
+/**
  * UI locale, matching next-intl routing config.
  */
 export type AppLocale = "zh" | "en";
@@ -52,7 +58,7 @@ export type Episode = {
   publishedAt: string;        // ISO 8601
   durationSec?: number;
   imageUrl?: string;
-  language?: string;          // language index: "zh-tw" | "zh-cn" | "en"
+  language?: EpisodeLanguage;
 
   podcast: {
     showId: string;
