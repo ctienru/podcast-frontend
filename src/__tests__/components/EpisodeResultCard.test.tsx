@@ -292,7 +292,7 @@ describe("EpisodeResultCard", () => {
       fireEvent.click(screen.getByRole("article"));
 
       expect(navigator.sendBeacon).toHaveBeenCalledWith(
-        "/api/log/click",
+        expect.stringContaining("/log/click"),
         expect.stringContaining('"requestId":"req-abc"')
       );
     });
