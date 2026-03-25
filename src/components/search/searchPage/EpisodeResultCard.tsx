@@ -19,7 +19,7 @@ function getServerSnapshot() {
 
 function subscribe() {
   // No-op: this value never changes after mount
-  return () => {};
+  return () => { };
 }
 
 type Props = {
@@ -124,6 +124,8 @@ export function EpisodeResultCard({
   function handleClick() {
     const searchResultTimestamp = searchResultTimestampRef.current;
     if (!searchRequestId || searchResultTimestamp === null || !language) return;
+    const baseUrl = process.env.NEXT_PUBLIC_SEARCH_API_BASE;
+    if (!baseUrl) return;
 
     const payload = buildClickLogPayload({
       requestId: searchRequestId,
@@ -136,7 +138,7 @@ export function EpisodeResultCard({
     });
 
     navigator.sendBeacon(
-      `${process.env.NEXT_PUBLIC_SEARCH_API_BASE}/log/click`,
+      `${baseUrl}/log/click`,
       JSON.stringify(payload)
     );
   }
@@ -190,6 +192,9 @@ export function EpisodeResultCard({
                 rel="noopener noreferrer"
                 className="hover:underline focus-visible:outline-2 focus-visible:outline-offset-2"
                 aria-label={`Open podcast ${podcast.title} on Apple Podcasts`}
+                onClick={() => {
+                  handleClick();
+                }}
               >
                 {podcast.title}
               </a>

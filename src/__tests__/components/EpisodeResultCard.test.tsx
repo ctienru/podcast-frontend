@@ -277,7 +277,7 @@ describe("EpisodeResultCard", () => {
   });
 
   describe("click log — sendBeacon", () => {
-    it("有 searchRequestId 時點擊卡片送出 beacon", () => {
+    it("sends beacon when card is clicked with searchRequestId", () => {
       const episode = createMockEpisode();
       render(
         <EpisodeResultCard
@@ -297,7 +297,7 @@ describe("EpisodeResultCard", () => {
       );
     });
 
-    it("beacon payload 包含 query 和 rank", () => {
+    it("includes query and rank in beacon payload", () => {
       const episode = createMockEpisode();
       render(
         <EpisodeResultCard
@@ -318,7 +318,7 @@ describe("EpisodeResultCard", () => {
       expect(payload.selectedLang).toBe("en");
     });
 
-    it("searchRequestId 為 null 時不送出 beacon", () => {
+    it("does not send beacon when searchRequestId is null", () => {
       const episode = createMockEpisode();
       render(
         <EpisodeResultCard
@@ -333,6 +333,48 @@ describe("EpisodeResultCard", () => {
       fireEvent.click(screen.getByRole("article"));
 
       expect(navigator.sendBeacon).not.toHaveBeenCalled();
+    });
+
+    it("sends beacon when Apple Podcasts link is clicked", () => {
+      const episode = createMockEpisode();
+      render(
+        <EpisodeResultCard
+          episode={episode}
+          rank={1}
+          searchRequestId="req-link"
+          query="連結點擊"
+          selectedLang="zh-tw"
+        />
+      );
+
+      fireEvent.click(screen.getByRole("link"));
+
+      expect(navigator.sendBeacon).toHaveBeenCalledWith(
+        expect.stringContaining("/log/click"),
+        expect.stringContaining('"requestId":"req-link"')
+      );
+    });
+
+    it("does not send beacon when NEXT_PUBLIC_SEARCH_API_BASE is missing", () => {
+      const originalBaseUrl = process.env.NEXT_PUBLIC_SEARCH_API_BASE;
+      process.env.NEXT_PUBLIC_SEARCH_API_BASE = "";
+
+      const episode = createMockEpisode();
+      render(
+        <EpisodeResultCard
+          episode={episode}
+          rank={1}
+          searchRequestId="req-no-base"
+          query="test"
+          selectedLang="zh-tw"
+        />
+      );
+
+      fireEvent.click(screen.getByRole("article"));
+
+      expect(navigator.sendBeacon).not.toHaveBeenCalled();
+
+      process.env.NEXT_PUBLIC_SEARCH_API_BASE = originalBaseUrl;
     });
   });
 });
