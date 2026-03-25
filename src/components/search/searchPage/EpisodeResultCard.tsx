@@ -139,7 +139,7 @@ export function EpisodeResultCard({
 
     navigator.sendBeacon(
       `${baseUrl}/log/click`,
-      JSON.stringify(payload)
+      new Blob([JSON.stringify(payload)], { type: "application/json" })
     );
   }
 

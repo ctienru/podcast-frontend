@@ -3,6 +3,15 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { EpisodeResultCard } from "@/components/search/searchPage/EpisodeResultCard";
 import type { Episode } from "@/types/search";
 
+function readBlob(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(blob);
+  });
+}
+
 const defaultClickLogProps = {
   rank: 1,
   searchRequestId: null as string | null,
@@ -277,7 +286,7 @@ describe("EpisodeResultCard", () => {
   });
 
   describe("click log — sendBeacon", () => {
-    it("sends beacon when card is clicked with searchRequestId", () => {
+    it("sends beacon when card is clicked with searchRequestId", async () => {
       const episode = createMockEpisode();
       render(
         <EpisodeResultCard
@@ -293,11 +302,15 @@ describe("EpisodeResultCard", () => {
 
       expect(navigator.sendBeacon).toHaveBeenCalledWith(
         expect.stringContaining("/log/click"),
-        expect.stringContaining('"requestId":"req-abc"')
+        expect.any(Blob)
       );
+      const blob = (navigator.sendBeacon as ReturnType<typeof vi.fn>).mock.calls[0][1] as Blob;
+      expect(blob.type).toBe("application/json");
+      const body = JSON.parse(await readBlob(blob));
+      expect(body.requestId).toBe("req-abc");
     });
 
-    it("includes query and rank in beacon payload", () => {
+    it("includes query and rank in beacon payload", async () => {
       const episode = createMockEpisode();
       render(
         <EpisodeResultCard
@@ -312,7 +325,7 @@ describe("EpisodeResultCard", () => {
       fireEvent.click(screen.getByRole("article"));
 
       const call = (navigator.sendBeacon as ReturnType<typeof vi.fn>).mock.calls[0];
-      const payload = JSON.parse(call[1]);
+      const payload = JSON.parse(await readBlob(call[1] as Blob));
       expect(payload.query).toBe("podcast搜尋");
       expect(payload.clickedRank).toBe(3);
       expect(payload.selectedLang).toBe("en");
@@ -335,7 +348,7 @@ describe("EpisodeResultCard", () => {
       expect(navigator.sendBeacon).not.toHaveBeenCalled();
     });
 
-    it("sends beacon when Apple Podcasts link is clicked", () => {
+    it("sends beacon when Apple Podcasts link is clicked", async () => {
       const episode = createMockEpisode();
       render(
         <EpisodeResultCard
@@ -351,8 +364,11 @@ describe("EpisodeResultCard", () => {
 
       expect(navigator.sendBeacon).toHaveBeenCalledWith(
         expect.stringContaining("/log/click"),
-        expect.stringContaining('"requestId":"req-link"')
+        expect.any(Blob)
       );
+      const blob = (navigator.sendBeacon as ReturnType<typeof vi.fn>).mock.calls[0][1] as Blob;
+      const body = JSON.parse(await readBlob(blob));
+      expect(body.requestId).toBe("req-link");
     });
 
     it("does not send beacon when NEXT_PUBLIC_SEARCH_API_BASE is missing", () => {
