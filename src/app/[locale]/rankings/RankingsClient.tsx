@@ -58,12 +58,13 @@ function formatRelativeTime(isoString?: string, locale?: string): string {
 
 type Props = {
   initialRankings: RankingsResult | null;
-  initialCountry: string;
+  initialRegion: string;
   initialType: string;
   locale: string;
   error: string | null;
   translations: {
-    selectCountry: string;
+    selectRegion: string;
+    china: string;
     taiwan: string;
     unitedStates: string;
     podcast: string;
@@ -76,7 +77,7 @@ type Props = {
 
 export function RankingsClient({
   initialRankings,
-  initialCountry,
+  initialRegion,
   initialType,
   locale,
   error,
@@ -85,7 +86,7 @@ export function RankingsClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [country, setCountry] = useState(initialCountry);
+  const [region, setRegion] = useState(initialRegion);
   const [type, setType] = useState(initialType);
   const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
   const [enrichedItems, setEnrichedItems] = useState<RankingsItemEnriched[]>(
@@ -139,10 +140,10 @@ export function RankingsClient({
     };
   }, [initialRankings, type]);
 
-  const handleCountryChange = (value: string) => {
-    setCountry(value);
+  const handleRegionChange = (value: string) => {
+    setRegion(value);
     const params = new URLSearchParams(searchParams.toString());
-    params.set("country", value);
+    params.set("region", value);
     router.push(`?${params.toString()}`);
   };
 
@@ -172,11 +173,12 @@ export function RankingsClient({
     <>
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Select value={country} onValueChange={handleCountryChange}>
+        <Select value={region} onValueChange={handleRegionChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={t.selectCountry} />
+            <SelectValue placeholder={t.selectRegion} />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="cn">{t.china}</SelectItem>
             <SelectItem value="tw">{t.taiwan}</SelectItem>
             <SelectItem value="us">{t.unitedStates}</SelectItem>
           </SelectContent>

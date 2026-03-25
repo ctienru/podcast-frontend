@@ -312,7 +312,7 @@ describe("getRankingsFromApi", () => {
     const mockResponse = {
       status: "ok",
       data: {
-        country: "tw",
+        region: "tw",
         type: "podcast",
         items: [
           { rank: 1, showId: "1", title: "Top Podcast", publisher: "Pub 1" },
@@ -326,9 +326,9 @@ describe("getRankingsFromApi", () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await getRankingsFromApi({ country: "tw", type: "podcast" });
+    const result = await getRankingsFromApi({ region: "tw", type: "podcast" });
 
-    expect(result.country).toBe("tw");
+    expect(result.region).toBe("tw");
     expect(result.type).toBe("podcast");
     expect(result.items).toHaveLength(1);
     expect(result.items[0].rank).toBe(1);
@@ -340,14 +340,14 @@ describe("getRankingsFromApi", () => {
       json: () =>
         Promise.resolve({
           status: "ok",
-          data: { country: "tw", type: "podcast", items: [] },
+          data: { region: "tw", type: "podcast", items: [] },
         }),
     });
 
     await getRankingsFromApi({});
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringMatching(/country=tw.*type=podcast.*limit=20/),
+      expect.stringMatching(/region=tw.*type=podcast.*limit=20/),
       expect.any(Object)
     );
   });
@@ -364,7 +364,7 @@ describe("getRankingsFromApi", () => {
     });
 
     await expect(
-      getRankingsFromApi({ country: "tw", type: "podcast" })
+      getRankingsFromApi({ region: "tw", type: "podcast" })
     ).rejects.toThrow("Rankings unavailable");
   });
 
@@ -394,9 +394,9 @@ describe("getRankingsFromApi", () => {
       json: () => Promise.resolve({ status: "ok" }),
     });
 
-    const result = await getRankingsFromApi({ country: "us", type: "episode" });
+    const result = await getRankingsFromApi({ region: "us", type: "episode" });
 
-    expect(result.country).toBe("us");
+    expect(result.region).toBe("us");
     expect(result.type).toBe("episode");
     expect(result.items).toEqual([]);
   });

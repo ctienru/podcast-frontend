@@ -175,17 +175,17 @@ export async function searchEpisodesFromApi({
  * Rankings
  * ========================= */
 export async function getRankingsFromApi({
-  country = "tw",
+  region = "tw",
   type = "podcast",
   limit = 20,
 }: {
-  country?: string;
+  region?: string;
   type?: string;
   limit?: number;
 }): Promise<RankingsResult> {
   const apiBaseUrl = getApiBaseUrl();
   const params = new URLSearchParams({
-    country,
+    region,
     type,
     limit: String(limit),
   });
@@ -215,7 +215,14 @@ export async function getRankingsFromApi({
     );
   }
 
-  return json.data ?? { country, type, items: [] };
+  if (!json.data || typeof json.data !== "object") {
+    return { region, type, items: [] };
+  }
+
+  return {
+    ...json.data,
+    region: json.data.region ?? json.data.country ?? region,
+  };
 }
 
 /* =========================

@@ -7,7 +7,7 @@
     "heroTitle": "搜索 Podcast 单集",
     "heroDescription": "搜索超过 17 万集 Apple Podcasts 单集内容。",
     "rankingsTitle": "Podcast 排行榜",
-    "rankingsDescription": "台湾与美国的 Apple Podcasts 排行榜。"
+    "rankingsDescription": "中国区的 Apple Podcasts 排行榜。"
   },
   "search": {
     "placeholder": "搜索单集",
@@ -61,9 +61,10 @@
     "titlePodcast": "Apple Podcasts 热门节目排行",
     "titleEpisode": "Apple Podcasts 热门单集排行",
     "description": "Apple Podcasts 热门节目与单集排行",
-    "descriptionPodcast": "浏览台湾 Apple Podcasts 热门节目排行榜。",
-    "descriptionEpisode": "浏览台湾 Apple Podcasts 热门单集排行榜。",
-    "selectCountry": "选择国家",
+    "descriptionPodcast": "浏览中国区 Apple Podcasts 热门节目排行榜。",
+    "descriptionEpisode": "浏览中国区 Apple Podcasts 热门单集排行榜。",
+    "selectRegion": "选择地区",
+    "china": "中国",
     "taiwan": "台湾",
     "unitedStates": "美国",
     "podcast": "节目",

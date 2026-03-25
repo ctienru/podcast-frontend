@@ -5,7 +5,7 @@ import { RankingsClient } from "./RankingsClient";
 
 type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ country?: string; type?: string }>;
+  searchParams: Promise<{ region?: string; type?: string }>;
 };
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
@@ -38,9 +38,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
 export default async function RankingsPage({ params, searchParams }: Props) {
   const { locale } = await params;
-  const { country, type = "podcast" } = await searchParams;
-  const defaultCountry = locale === "zh-TW" ? "tw" : "us";
-  const resolvedCountry = country ?? defaultCountry;
+  const { region, type = "podcast" } = await searchParams;
+  const defaultRegion = locale === "zh-TW" ? "tw" : locale === "zh-CN" ? "cn" : "us";
+  const resolvedRegion = region ?? defaultRegion;
   setRequestLocale(locale);
 
   const t = await getTranslations("rankings");
@@ -50,7 +50,7 @@ export default async function RankingsPage({ params, searchParams }: Props) {
 
   try {
     rankings = await getRankingsFromApi({
-      country: resolvedCountry,
+      region: resolvedRegion,
       type,
       limit: 100,
     });
@@ -60,19 +60,19 @@ export default async function RankingsPage({ params, searchParams }: Props) {
 
   const jsonLd = rankings?.items?.length
     ? {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        name: locale.startsWith("zh") ? "Podcast 排行榜" : "Podcast Rankings",
-        itemListElement: rankings.items.slice(0, 10).map((item, i) => ({
-          "@type": "ListItem",
-          position: item.rank ?? i + 1,
-          item: {
-            "@type": "PodcastSeries",
-            name: item.title,
-            author: { "@type": "Person", name: item.publisher },
-          },
-        })),
-      }
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: locale.startsWith("zh") ? "Podcast 排行榜" : "Podcast Rankings",
+      itemListElement: rankings.items.slice(0, 10).map((item, i) => ({
+        "@type": "ListItem",
+        position: item.rank ?? i + 1,
+        item: {
+          "@type": "PodcastSeries",
+          name: item.title,
+          author: { "@type": "Person", name: item.publisher },
+        },
+      })),
+    }
     : null;
 
   return (
@@ -91,12 +91,13 @@ export default async function RankingsPage({ params, searchParams }: Props) {
 
       <RankingsClient
         initialRankings={rankings}
-        initialCountry={resolvedCountry}
+        initialRegion={resolvedRegion}
         initialType={type}
         locale={locale}
         error={error}
         translations={{
-          selectCountry: t("selectCountry"),
+          selectRegion: t("selectRegion"),
+          china: t("china"),
           taiwan: t("taiwan"),
           unitedStates: t("unitedStates"),
           podcast: t("podcast"),

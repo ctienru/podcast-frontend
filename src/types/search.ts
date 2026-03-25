@@ -108,7 +108,7 @@ export type RankingsItemEnriched = RankingsItem & {
 };
 
 export type RankingsResult = {
-  country: string;
+  region: string;
   type: string;
   items: RankingsItem[];
   updatedAt?: string;  // ISO 8601
