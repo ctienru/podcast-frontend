@@ -101,6 +101,7 @@ export function RankingsClient({
 
   // Async load show details
   useEffect(() => {
+    let isMounted = true;
     const items = initialRankings?.items ?? [];
 
     // Early return for cases that don't need async enrichment
@@ -120,6 +121,7 @@ export function RankingsClient({
     // Batch fetch details (only set state in async callback)
     batchGetShowDetailsFromApi(showIds)
       .then((details) => {
+        if (!isMounted) return;
         const enriched = items.map((item) => ({
           ...item,
           detail: item.showId ? details[item.showId] : undefined,
@@ -127,9 +129,14 @@ export function RankingsClient({
         setEnrichedItems(enriched);
       })
       .catch((err) => {
+        if (!isMounted) return;
         console.error("Failed to load show details:", err);
         setEnrichedItems(items); // Fallback to basic items
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, [initialRankings, type]);
 
   const handleCountryChange = (value: string) => {
