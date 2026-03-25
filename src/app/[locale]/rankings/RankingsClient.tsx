@@ -23,29 +23,48 @@ function formatRelativeTime(isoString?: string, locale?: string): string {
   const date = new Date(isoString);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
-  const isZh = locale === "zh";
+  const isZhTW = locale === "zh-TW";
+  const isZhCN = locale === "zh-CN";
 
   const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 1) return isZh ? "剛剛" : "just now";
-  if (minutes < 60) return isZh ? `${minutes} 分鐘前` : `${minutes}m ago`;
+  if (minutes < 1) {
+    if (isZhCN) return "刚刚";
+    if (isZhTW) return "剛剛";
+    return "just now";
+  }
+  if (minutes < 60) {
+    if (isZhCN) return `${minutes} 分钟前`;
+    if (isZhTW) return `${minutes} 分鐘前`;
+    return `${minutes}m ago`;
+  }
 
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return isZh ? `${hours} 小時前` : `${hours}h ago`;
+  if (hours < 24) {
+    if (isZhCN) return `${hours} 小时前`;
+    if (isZhTW) return `${hours} 小時前`;
+    return `${hours}h ago`;
+  }
 
   const days = Math.floor(hours / 24);
-  if (days < 7) return isZh ? `${days} 天前` : `${days}d ago`;
+  if (days < 7) {
+    if (isZhCN || isZhTW) return `${days} 天前`;
+    return `${days}d ago`;
+  }
 
-  return date.toLocaleDateString(isZh ? "zh-TW" : "en-US");
+  if (isZhCN) return date.toLocaleDateString("zh-CN");
+  if (isZhTW) return date.toLocaleDateString("zh-TW");
+  return date.toLocaleDateString("en-US");
 }
 
 type Props = {
   initialRankings: RankingsResult | null;
-  initialCountry: string;
+  initialRegion: string;
   initialType: string;
   locale: string;
   error: string | null;
   translations: {
-    selectCountry: string;
+    selectRegion: string;
+    china: string;
     taiwan: string;
     unitedStates: string;
     podcast: string;
@@ -58,7 +77,7 @@ type Props = {
 
 export function RankingsClient({
   initialRankings,
-  initialCountry,
+  initialRegion,
   initialType,
   locale,
   error,
@@ -67,7 +86,7 @@ export function RankingsClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [country, setCountry] = useState(initialCountry);
+  const [region, setRegion] = useState(initialRegion);
   const [type, setType] = useState(initialType);
   const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
   const [enrichedItems, setEnrichedItems] = useState<RankingsItemEnriched[]>(
@@ -83,6 +102,7 @@ export function RankingsClient({
 
   // Async load show details
   useEffect(() => {
+    let isMounted = true;
     const items = initialRankings?.items ?? [];
 
     // Early return for cases that don't need async enrichment
@@ -102,6 +122,7 @@ export function RankingsClient({
     // Batch fetch details (only set state in async callback)
     batchGetShowDetailsFromApi(showIds)
       .then((details) => {
+        if (!isMounted) return;
         const enriched = items.map((item) => ({
           ...item,
           detail: item.showId ? details[item.showId] : undefined,
@@ -109,15 +130,20 @@ export function RankingsClient({
         setEnrichedItems(enriched);
       })
       .catch((err) => {
+        if (!isMounted) return;
         console.error("Failed to load show details:", err);
         setEnrichedItems(items); // Fallback to basic items
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, [initialRankings, type]);
 
-  const handleCountryChange = (value: string) => {
-    setCountry(value);
+  const handleRegionChange = (value: string) => {
+    setRegion(value);
     const params = new URLSearchParams(searchParams.toString());
-    params.set("country", value);
+    params.set("region", value);
     router.push(`?${params.toString()}`);
   };
 
@@ -147,11 +173,12 @@ export function RankingsClient({
     <>
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Select value={country} onValueChange={handleCountryChange}>
+        <Select value={region} onValueChange={handleRegionChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={t.selectCountry} />
+            <SelectValue placeholder={t.selectRegion} />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="cn">{t.china}</SelectItem>
             <SelectItem value="tw">{t.taiwan}</SelectItem>
             <SelectItem value="us">{t.unitedStates}</SelectItem>
           </SelectContent>

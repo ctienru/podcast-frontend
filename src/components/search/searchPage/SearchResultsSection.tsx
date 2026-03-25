@@ -4,8 +4,9 @@ import { SearchEmpty } from "@/components/search/SearchEmpty";
 import { SearchError } from "@/components/search/SearchError";
 import { ShowsBanner } from "@/components/search/searchPage/ShowsBanner";
 import { searchEpisodesFromApi, searchShowsFromApi } from "@/lib/search";
+import { getLanguageArray } from "@/app/[locale]/search/utils";
 import { buildSearchItemListSchema } from "@/lib/schema";
-import type { Episode, Show, SearchMode } from "@/types/search";
+import type { Episode, Show, SearchMode, LangFilter } from "@/types/search";
 
 const EPISODE_PAGE_SIZE = 10;
 const SHOWS_PAGE_SIZE = 10;
@@ -14,14 +15,14 @@ const MIN_QUERY_LENGTH = 2;
 type Props = {
   query: string;
   page: number;
-  language?: string[];
+  lang: LangFilter;
   mode?: SearchMode;
 };
 
 export default async function SearchResultsSection({
   query,
   page,
-  language,
+  lang,
   mode,
 }: Props) {
   let episodeResults: Episode[] = [];
@@ -29,19 +30,23 @@ export default async function SearchResultsSection({
   let showResults: Show[] = [];
   let error: string | null = null;
   let schema: object | null = null;
+  let searchRequestId: string | null = null;
+  let degradedWarning: string | null = null;
 
   try {
     // Fetch episodes
-    const episodes = await searchEpisodesFromApi({
+    const { result: episodes, searchRequestId: reqId, warning } = await searchEpisodesFromApi({
       query,
       page,
       pageSize: EPISODE_PAGE_SIZE,
-      language,
+      lang,
       mode,
     });
 
     episodeResults = episodes.items;
     episodeTotal = episodes.total;
+    searchRequestId = reqId || null;
+    degradedWarning = warning;
 
     // Fetch shows only on first page, always use hybrid mode
     if (page === 1) {
@@ -49,7 +54,7 @@ export default async function SearchResultsSection({
         const shows = await searchShowsFromApi({
           query,
           pageSize: SHOWS_PAGE_SIZE,
-          language,
+          language: getLanguageArray(lang),
           mode: "hybrid", // Always use hybrid for shows
         });
 
@@ -113,6 +118,13 @@ export default async function SearchResultsSection({
             <ShowsBanner shows={showResults} />
           )}
 
+          {degradedWarning && (
+            <p role="status" className="text-sm text-muted-foreground px-1 pb-2">
+              <span aria-hidden="true" className="mr-1">ℹ️</span>
+              {degradedWarning}
+            </p>
+          )}
+
           {hasEpisodes && (
             <SearchResultsClient
               episodes={episodeResults}
@@ -120,6 +132,8 @@ export default async function SearchResultsSection({
               page={page}
               pageSize={EPISODE_PAGE_SIZE}
               query={query}
+              searchRequestId={searchRequestId}
+              selectedLang={lang}
             />
           )}
         </>

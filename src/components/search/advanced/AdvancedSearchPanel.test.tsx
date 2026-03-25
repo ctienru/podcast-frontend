@@ -17,9 +17,10 @@ const defaultTranslations = {
   matchExactDesc: "Match the exact wording",
   language: "Language",
   languageHelp: "Which languages should results include?",
-  langAny: "Any language",
-  langZhOnly: "Chinese only",
-  langEnOnly: "English only",
+  langZhTw: "Traditional Chinese",
+  langZhCn: "Simplified Chinese",
+  langEn: "English",
+  langZhBoth: "Both Chinese scripts",
   applyFilters: "Apply filters",
   reset: "Reset",
 };
@@ -42,7 +43,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={false}
           onToggle={onToggle}
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -59,7 +61,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={false}
           onToggle={onToggle}
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -79,7 +82,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={false}
           onToggle={onToggle}
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -95,7 +99,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -115,7 +120,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="bm25"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -132,7 +138,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -147,7 +154,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="exact"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -167,7 +175,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -179,13 +188,13 @@ describe("AdvancedSearchPanel", () => {
 
       // Change language
       await user.click(screen.getByRole("combobox"));
-      await user.click(screen.getByRole("option", { name: /chinese only/i }));
+      await user.click(screen.getByRole("option", { name: /simplified chinese/i }));
 
       // Apply
       await user.click(screen.getByRole("button", { name: /apply filters/i }));
 
       await waitFor(() => {
-        expect(onApply).toHaveBeenCalledWith("bm25", "zh");
+        expect(onApply).toHaveBeenCalledWith("bm25", "zh-cn");
       });
     });
 
@@ -196,7 +205,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -219,7 +229,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="bm25"
-          currentLang="zh"
+          currentLang="zh-cn"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -240,7 +251,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="bm25"
-          currentLang="zh"
+          currentLang="zh-cn"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -253,7 +265,7 @@ describe("AdvancedSearchPanel", () => {
       // Click Reset
       await user.click(screen.getByRole("button", { name: /reset/i }));
 
-      // Should call onApply with default values
+      // Should call onReset with default values
       await waitFor(() => {
         expect(onReset).toHaveBeenCalled();
       });
@@ -266,7 +278,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="bm25"
-          currentLang="zh"
+          currentLang="zh-cn"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -289,7 +302,8 @@ describe("AdvancedSearchPanel", () => {
           isOpen={true}
           onToggle={onToggle}
           currentMode="hybrid"
-          currentLang="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
           onApply={onApply}
           onReset={onReset}
           translations={defaultTranslations}
@@ -304,7 +318,7 @@ describe("AdvancedSearchPanel", () => {
 
       // Change language
       await user.click(screen.getByRole("combobox"));
-      await user.click(screen.getByRole("option", { name: /chinese only/i }));
+      await user.click(screen.getByRole("option", { name: /simplified chinese/i }));
 
       // Still not called
       expect(onApply).not.toHaveBeenCalled();

@@ -41,13 +41,20 @@
     "matchExactDesc": "配對完全相同的用詞",
     "language": "語言",
     "languageHelp": "結果應包含哪些語言？",
-    "langAny": "任何語言",
-    "langZhOnly": "僅中文",
-    "langEnOnly": "僅英文",
+    "langZhTw": "繁體中文",
+    "langZhCn": "簡體中文",
+    "langZhBoth": "繁簡一起搜",
     "applyFilters": "套用篩選",
     "reset": "重設",
     "filtersApplied": "已套用篩選：",
-    "editFilters": "編輯"
+    "editFilters": "編輯",
+    "tooShortTitle": "搜尋字詞太短",
+    "tooShortDescription": "請輸入至少 {min} 個字元以搜尋。",
+    "noEpisodesTitle": "找不到單集",
+    "noEpisodesDescription": "上方找到相符的節目，但沒有找到「{query}」的單集。",
+    "noResultsTitle": "找不到結果",
+    "noResultsWithQuery": "找不到符合「{query}」的節目或單集，請嘗試其他關鍵字。",
+    "noResultsEmpty": "試著搜尋 Podcast 節目或單集。"
   },
   "rankings": {
     "title": "Podcast 排行榜",
@@ -56,7 +63,8 @@
     "description": "Apple Podcasts 熱門節目與單集排行",
     "descriptionPodcast": "瀏覽台灣 Apple Podcasts 熱門節目排行榜。",
     "descriptionEpisode": "瀏覽台灣 Apple Podcasts 熱門單集排行榜。",
-    "selectCountry": "選擇國家",
+    "selectRegion": "選擇地區",
+    "china": "中國",
     "taiwan": "台灣",
     "unitedStates": "美國",
     "podcast": "節目",
@@ -71,7 +79,8 @@
   },
   "language": {
     "en": "EN",
-    "zh": "中文"
+    "zh-TW": "繁中",
+    "zh-CN": "簡中"
   },
   "common": {
     "copySuccess": "已複製到剪貼簿",

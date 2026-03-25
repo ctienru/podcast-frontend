@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useRef, useEffect, useSyncExternalStore } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CopyableTitle } from "@/components/CopyableTitle";
-import type { Episode } from "@/types/search";
+import { buildClickLogPayload } from "@/lib/analytics";
+import type { Episode, LangFilter } from "@/types/search";
 
 const PLACEHOLDER_IMAGE = "/placeholder-podcast.svg";
 
@@ -18,11 +19,15 @@ function getServerSnapshot() {
 
 function subscribe() {
   // No-op: this value never changes after mount
-  return () => {};
+  return () => { };
 }
 
 type Props = {
   episode: Episode;
+  rank: number;
+  searchRequestId: string | null;
+  query: string;
+  selectedLang: LangFilter;
 };
 
 /* =========================
@@ -94,7 +99,17 @@ function formatRelativeDate(iso: string) {
 /* =========================
  * Component
  * ========================= */
-export function EpisodeResultCard({ episode }: Props) {
+export function EpisodeResultCard({
+  episode,
+  rank,
+  searchRequestId,
+  query,
+  selectedLang,
+}: Props) {
+  const searchResultTimestampRef = useRef<number | null>(null);
+  useEffect(() => {
+    searchResultTimestampRef.current = Date.now();
+  }, [searchRequestId]);
   const {
     title,
     description,
@@ -102,8 +117,31 @@ export function EpisodeResultCard({ episode }: Props) {
     publishedAt,
     durationSec,
     imageUrl,
+    language,
     podcast,
   } = episode;
+
+  function handleClick() {
+    const searchResultTimestamp = searchResultTimestampRef.current;
+    if (!searchRequestId || searchResultTimestamp === null || !language) return;
+    const baseUrl = process.env.NEXT_PUBLIC_SEARCH_API_BASE;
+    if (!baseUrl) return;
+
+    const payload = buildClickLogPayload({
+      requestId: searchRequestId,
+      query,
+      selectedLang,
+      episode: { episodeId: episode.episodeId, language },
+      rank,
+      searchResultTimestamp,
+      clickTimestamp: Date.now(),
+    });
+
+    navigator.sendBeacon(
+      `${baseUrl}/log/click`,
+      new Blob([JSON.stringify(payload)], { type: "application/json" })
+    );
+  }
 
   // Image fallback: episode → podcast → placeholder
   const initialImage = imageUrl || podcast.imageUrl || PLACEHOLDER_IMAGE;
@@ -120,7 +158,15 @@ export function EpisodeResultCard({ episode }: Props) {
   return (
     <Card>
       <CardContent className="p-4">
-        <article className="flex gap-4 overflow-hidden">
+        <article
+          role="article"
+          className="flex gap-4 overflow-hidden"
+          onClick={(event) => {
+            const target = event.target as HTMLElement | null;
+            if (target && target.closest("a, button, [role='button'], input, textarea, select")) return;
+            handleClick();
+          }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
           <img
             src={imgSrc}
@@ -146,6 +192,9 @@ export function EpisodeResultCard({ episode }: Props) {
                 rel="noopener noreferrer"
                 className="hover:underline focus-visible:outline-2 focus-visible:outline-offset-2"
                 aria-label={`Open podcast ${podcast.title} on Apple Podcasts`}
+                onClick={() => {
+                  handleClick();
+                }}
               >
                 {podcast.title}
               </a>

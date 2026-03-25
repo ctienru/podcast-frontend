@@ -1,0 +1,89 @@
+{
+  "site": {
+    "title": "Podvein",
+    "tagline": "Podcast 单集搜索"
+  },
+  "home": {
+    "heroTitle": "搜索 Podcast 单集",
+    "heroDescription": "搜索超过 17 万集 Apple Podcasts 单集内容。",
+    "rankingsTitle": "Podcast 排行榜",
+    "rankingsDescription": "中国区的 Apple Podcasts 排行榜。"
+  },
+  "search": {
+    "placeholder": "搜索单集",
+    "button": "搜索",
+    "results": "「{query}」的搜索结果 · 共 {count} 条",
+    "resultsAll": "显示所有结果 · 共 {count} 条",
+    "emptyTitle": "找不到结果",
+    "emptyDescription": "请尝试其他关键字",
+    "podcasts": "节目",
+    "episodes": "单集",
+    "errorMessage": "发生错误，请稍后再试。",
+    "retry": "重试",
+    "langEn": "英文",
+    "langZh": "中文",
+    "langHybrid": "中英混合",
+    "modeHybrid": "智能搜索",
+    "modeBm25": "关键字",
+    "modeExact": "精确搜索",
+    "loading": "加载中...",
+    "advanced": "高级搜索",
+    "advancedTitle": "高级搜索",
+    "advancedSubtitle": "调整搜索结果的匹配与筛选方式",
+    "matchBehavior": "匹配方式",
+    "matchBehaviorHelp": "查询应该多严格地匹配？",
+    "matchSmart": "智能搜索",
+    "matchSmartRecommended": "智能搜索（推荐）",
+    "matchSmartDesc": "找出相关结果，即使用词不同",
+    "matchKeyword": "关键字",
+    "matchKeywordDesc": "只匹配重要的词汇",
+    "matchExact": "精确词组",
+    "matchExactDesc": "匹配完全相同的用词",
+    "language": "语言",
+    "languageHelp": "结果应包含哪些语言？",
+    "langZhTw": "繁体中文",
+    "langZhCn": "简体中文",
+    "langZhBoth": "繁简一起搜",
+    "applyFilters": "应用筛选",
+    "reset": "重置",
+    "filtersApplied": "已应用筛选：",
+    "editFilters": "编辑",
+    "tooShortTitle": "搜索词太短",
+    "tooShortDescription": "请输入至少 {min} 个字符以搜索。",
+    "noEpisodesTitle": "找不到单集",
+    "noEpisodesDescription": "上方找到相符的节目，但没有找到「{query}」的单集。",
+    "noResultsTitle": "找不到结果",
+    "noResultsWithQuery": "找不到符合「{query}」的节目或单集，请尝试其他关键字。",
+    "noResultsEmpty": "试着搜索 Podcast 节目或单集。"
+  },
+  "rankings": {
+    "title": "Podcast 排行榜",
+    "titlePodcast": "Apple Podcasts 热门节目排行",
+    "titleEpisode": "Apple Podcasts 热门单集排行",
+    "description": "Apple Podcasts 热门节目与单集排行",
+    "descriptionPodcast": "浏览中国区 Apple Podcasts 热门节目排行榜。",
+    "descriptionEpisode": "浏览中国区 Apple Podcasts 热门单集排行榜。",
+    "selectRegion": "选择地区",
+    "china": "中国",
+    "taiwan": "台湾",
+    "unitedStates": "美国",
+    "podcast": "节目",
+    "episode": "单集",
+    "noResults": "目前没有排行榜数据",
+    "episodes": "集",
+    "updatedAt": "__time__ 更新"
+  },
+  "nav": {
+    "search": "搜索",
+    "rankings": "排行榜"
+  },
+  "language": {
+    "en": "EN",
+    "zh-TW": "繁中",
+    "zh-CN": "简中"
+  },
+  "common": {
+    "copySuccess": "已复制到剪贴板",
+    "clickToCopy": "点击复制"
+  }
+}

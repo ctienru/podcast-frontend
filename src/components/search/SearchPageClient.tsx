@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { SearchMode, LangFilter } from "@/types/search";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { defaultLangForLocale, type AppLocale, type SearchMode, type LangFilter } from "@/types/search";
 import { AdvancedSearchPanel } from "./advanced/AdvancedSearchPanel";
 import { FiltersAppliedBar } from "./advanced/FiltersAppliedBar";
 
@@ -24,9 +24,10 @@ type Props = {
     matchExactDesc: string;
     language: string;
     languageHelp: string;
-    langAny: string;
-    langZhOnly: string;
-    langEnOnly: string;
+    langZhTw: string;
+    langZhCn: string;
+    langEn: string;
+    langZhBoth: string;
     applyFilters: string;
     reset: string;
     filtersApplied: string;
@@ -37,28 +38,28 @@ type Props = {
 export function SearchPageClient({ currentMode, currentLang, translations }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { locale } = useParams<{ locale: string }>();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+
+  const defaultLang: LangFilter = defaultLangForLocale(locale as AppLocale);
 
   const handleApply = (mode: SearchMode, lang: LangFilter) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    // Set mode parameter (or remove if default)
     if (mode === "hybrid") {
       params.delete("mode");
     } else {
       params.set("mode", mode);
     }
 
-    // Set lang parameter (or remove if default)
-    if (lang === "hybrid") {
+    // Omit lang from URL when it matches the locale default — keeps URLs clean
+    if (lang === defaultLang) {
       params.delete("lang");
     } else {
       params.set("lang", lang);
     }
 
-    // Reset to page 1 when changing filters
     params.delete("page");
-
     router.push(`?${params.toString()}`);
   };
 
@@ -81,6 +82,7 @@ export function SearchPageClient({ currentMode, currentLang, translations }: Pro
         onToggle={() => setIsAdvancedOpen(!isAdvancedOpen)}
         currentMode={currentMode}
         currentLang={currentLang}
+        defaultLang={defaultLang}
         onApply={handleApply}
         onReset={handleReset}
         translations={translations}
@@ -89,6 +91,7 @@ export function SearchPageClient({ currentMode, currentLang, translations }: Pro
       <FiltersAppliedBar
         mode={currentMode}
         lang={currentLang}
+        defaultLang={defaultLang}
         onEdit={handleEdit}
         translations={{
           filtersApplied: translations.filtersApplied,
@@ -96,9 +99,10 @@ export function SearchPageClient({ currentMode, currentLang, translations }: Pro
           matchSmart: translations.matchSmart,
           matchKeyword: translations.matchKeyword,
           matchExact: translations.matchExact,
-          langAny: translations.langAny,
-          langZhOnly: translations.langZhOnly,
-          langEnOnly: translations.langEnOnly,
+          langZhTw: translations.langZhTw,
+          langZhCn: translations.langZhCn,
+          langEn: translations.langEn,
+          langZhBoth: translations.langZhBoth,
         }}
       />
     </div>

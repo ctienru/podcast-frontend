@@ -22,14 +22,14 @@ Podcast episode search frontend built with Next.js 16 and React 19, featuring se
 ## Features
 
 - **Server-First Rendering**: Server Components for data fetching, Client Components for interactivity
-- **Internationalization**: English and Chinese (Traditional) with locale-based routing
+- **Internationalization**: English, Traditional Chinese, and Simplified Chinese with locale-based routing
 - **Episode Search**: Search podcast episodes with default Smart search + Any language behavior
 - **Advanced Search UI**: Progressive disclosure panel with collapsible interface
   - Match behavior options: Smart (recommended), Keyword, Exact phrase
   - Language filter: Any language, Chinese only, English only
   - Draft state management: changes apply only when user confirms
 - **Autocomplete**: Real-time search suggestions with keyboard navigation (↑↓ Enter Escape)
-- **Rankings**: Apple Podcasts rankings by country (Taiwan, US)
+- **Rankings**: Apple Podcasts rankings by region (China, Taiwan, US)
 - **SEO Optimized**: Dynamic metadata, canonical URLs, Schema.org structured data
 - **Accessibility**: ARIA labels, keyboard navigation, screen reader support
 
@@ -51,7 +51,7 @@ Podcast episode search frontend built with Next.js 16 and React 19, featuring se
 podcast-frontend/
 ├── src/
 │   ├── app/                      # Next.js App Router
-│   │   ├── [locale]/            # i18n routes (en, zh)
+│   │   ├── [locale]/            # i18n routes (en, zh-TW, zh-CN)
 │   │   │   ├── page.tsx         # Home page
 │   │   │   ├── search/          # Search results
 │   │   │   └── rankings/        # Podcast rankings
@@ -76,7 +76,7 @@ podcast-frontend/
 │   ├── lib/                     # API client & utilities
 │   ├── types/                   # TypeScript definitions
 │   ├── i18n/                    # i18n configuration
-│   ├── messages/                # Translation files (en.json, zh.json)
+│   ├── messages/                # Translation files (en.json, zh-TW.json, zh-CN.json)
 │   └── __tests__/               # Unit tests
 ├── public/                      # Static assets
 ├── Dockerfile                   # Production build
@@ -140,7 +140,7 @@ Open http://localhost:3000 to view the app.
 |-------|-------------|
 | `/[locale]` | Home page with search |
 | `/[locale]/search?q=<query>&page=<n>&lang=<en\|zh\|hybrid>&mode=<bm25\|knn\|hybrid\|exact>` | Search results |
-| `/[locale]/rankings?country=<tw\|us>&type=<podcast\|episode>` | Podcast/episode rankings |
+| `/[locale]/rankings?region=<cn\|tw\|us>&type=<podcast\|episode>` | Podcast/episode rankings |
 
 **Search Parameters:**
 
@@ -156,7 +156,12 @@ Open http://localhost:3000 to view the app.
 - All parameters are backward compatible with existing bookmarks
 - Use Advanced Search UI to adjust filters interactively
 
-Supported locales: `en`, `zh`
+Supported locales: `en`, `zh-TW`, `zh-CN`
+
+**Rankings defaults by locale:**
+- `zh-CN` → `region=cn`
+- `zh-TW` → `region=tw`
+- `en` → `region=us`
 
 ## Advanced Search UI
 

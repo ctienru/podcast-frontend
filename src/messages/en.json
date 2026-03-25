@@ -41,13 +41,20 @@
     "matchExactDesc": "Match the exact wording",
     "language": "Language",
     "languageHelp": "Which languages should results include?",
-    "langAny": "Any language",
-    "langZhOnly": "Chinese only",
-    "langEnOnly": "English only",
+    "langZhTw": "Traditional Chinese",
+    "langZhCn": "Simplified Chinese",
+    "langZhBoth": "Both Chinese scripts",
     "applyFilters": "Apply filters",
     "reset": "Reset",
     "filtersApplied": "Filters applied:",
-    "editFilters": "Edit"
+    "editFilters": "Edit",
+    "tooShortTitle": "Search query too short",
+    "tooShortDescription": "Please enter at least {min} characters to search.",
+    "noEpisodesTitle": "No episodes found",
+    "noEpisodesDescription": "We found matching podcasts above, but no specific episodes for \"{query}\".",
+    "noResultsTitle": "No results found",
+    "noResultsWithQuery": "No podcasts or episodes match \"{query}\". Try a different keyword.",
+    "noResultsEmpty": "Try searching for podcasts or episodes."
   },
   "rankings": {
     "title": "Podcast Rankings",
@@ -56,7 +63,8 @@
     "description": "Top podcasts and episodes from Apple Podcasts charts",
     "descriptionPodcast": "Browse the top podcasts on Apple Podcasts US charts.",
     "descriptionEpisode": "Browse the top episodes on Apple Podcasts US charts.",
-    "selectCountry": "Select country",
+    "selectRegion": "Select region",
+    "china": "China",
     "taiwan": "Taiwan",
     "unitedStates": "United States",
     "podcast": "Podcast",
@@ -71,7 +79,8 @@
   },
   "language": {
     "en": "EN",
-    "zh": "中文"
+    "zh-TW": "繁中",
+    "zh-CN": "简中"
   },
   "common": {
     "copySuccess": "Copied to clipboard",

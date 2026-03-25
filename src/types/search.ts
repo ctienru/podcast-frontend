@@ -1,8 +1,36 @@
 // Search modes for episode search
 export type SearchMode = "bm25" | "knn" | "hybrid" | "exact";
 
-// Language filter for search
-export type LangFilter = "en" | "zh" | "hybrid";
+/**
+ * Language filter selected by the user.
+ *
+ * - "zh-tw"   Traditional Chinese (targets podcast-episodes-zh-tw index)
+ * - "zh-cn"   Simplified Chinese  (targets podcast-episodes-zh-cn index)
+ * - "en"      English             (targets podcast-episodes-en index)
+ * - "zh-both" Both Chinese scripts (queries two indexes simultaneously, backend RRF merge, first 5 pages only)
+ */
+export type LangFilter = "zh-tw" | "zh-cn" | "en" | "zh-both";
+
+/**
+ * Language index value stored on an episode document.
+ * Subset of LangFilter (excludes "zh-both", which is a query-time option only).
+ */
+export type EpisodeLanguage = "zh-tw" | "zh-cn" | "en";
+
+/**
+ * UI locale, matching next-intl routing config.
+ */
+export type AppLocale = "zh-TW" | "zh-CN" | "en";
+
+/**
+ * Derives the default LangFilter from the URL locale.
+ * zh-TW → zh-tw; zh-CN → zh-cn; anything else → en
+ */
+export function defaultLangForLocale(locale: AppLocale): LangFilter {
+  if (locale === "zh-TW") return "zh-tw";
+  if (locale === "zh-CN") return "zh-cn";
+  return "en";
+}
 
 export type Show = {
   showId: string;
@@ -32,6 +60,7 @@ export type Episode = {
   publishedAt: string;        // ISO 8601
   durationSec?: number;
   imageUrl?: string;
+  language?: EpisodeLanguage;
 
   podcast: {
     showId: string;
@@ -79,7 +108,7 @@ export type RankingsItemEnriched = RankingsItem & {
 };
 
 export type RankingsResult = {
-  country: string;
+  region: string;
   type: string;
   items: RankingsItem[];
   updatedAt?: string;  // ISO 8601
