@@ -1,26 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect, useSyncExternalStore } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CopyableTitle } from "@/components/CopyableTitle";
 import { buildClickLogPayload } from "@/lib/analytics";
 import type { Episode, LangFilter } from "@/types/search";
 
 const PLACEHOLDER_IMAGE = "/placeholder-podcast.svg";
-
-// Helper to detect client-side rendering (avoids hydration mismatch)
-function getClientSnapshot() {
-  return true;
-}
-
-function getServerSnapshot() {
-  return false;
-}
-
-function subscribe() {
-  // No-op: this value never changes after mount
-  return () => { };
-}
 
 type Props = {
   episode: Episode;
@@ -72,6 +58,15 @@ function formatDuration(seconds?: number) {
   if (!seconds) return null;
   const min = Math.floor(seconds / 60);
   return `${min} min`;
+}
+
+function formatAbsoluteDate(iso: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(new Date(iso));
 }
 
 // Relative date (timezone-aware)
@@ -146,9 +141,27 @@ export function EpisodeResultCard({
   // Image fallback: episode → podcast → placeholder
   const initialImage = imageUrl || podcast.imageUrl || PLACEHOLDER_IMAGE;
   const [imgSrc, setImgSrc] = useState(initialImage);
+  const absoluteDate = useMemo(() => formatAbsoluteDate(publishedAt), [publishedAt]);
+  const [relativeDate, setRelativeDate] = useState<{
+    publishedAt: string;
+    value: string;
+  } | null>(null);
 
-  // Detect client-side rendering to avoid hydration mismatch
-  const isClient = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+  useEffect(() => {
+    const timerId = window.setTimeout(() => {
+      setRelativeDate({
+        publishedAt,
+        value: formatRelativeDate(publishedAt),
+      });
+    }, 0);
+
+    return () => window.clearTimeout(timerId);
+  }, [publishedAt]);
+
+  const displayDate =
+    relativeDate?.publishedAt === publishedAt
+      ? relativeDate.value
+      : absoluteDate;
 
   const titleWithHighlight =
     highlights?.title?.[0] ?? title;
@@ -205,11 +218,7 @@ export function EpisodeResultCard({
             {/* Meta */}
             <p className="text-xs text-muted-foreground">
               {formatDuration(durationSec)} ·{" "}
-              {isClient ? formatRelativeDate(publishedAt) : new Date(publishedAt).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
+              {displayDate}
             </p>
 
             {/* Description / highlight */}
