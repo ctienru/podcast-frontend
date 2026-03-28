@@ -54,7 +54,12 @@ export function AdvancedSearchPanel({
   useEffect(() => {
     if (!isOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+      // Ignore clicks inside Radix portals (e.g. SelectContent) which render outside panelRef
+      const path = event.composedPath();
+      const isInsidePortal = path.some(
+        (el) => el instanceof HTMLElement && el.hasAttribute("data-radix-popper-content-wrapper")
+      );
+      if (!isInsidePortal && panelRef.current && !panelRef.current.contains(event.target as Node)) {
         onToggle();
       }
     };
