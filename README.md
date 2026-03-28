@@ -28,6 +28,8 @@ Podcast episode search frontend built with Next.js 16 and React 19, featuring se
   - Match behavior options: Smart (recommended), Keyword, Exact phrase
   - Language filter: Any language, Chinese only, English only
   - Draft state management: changes apply only when user confirms
+- **Click Analytics**: Episode click events tracked via `sendBeacon` to `/api/logs/click`
+- **Degraded Warning Banner**: Shown when backend returns `partial_success` (embedding unavailable; BM25-only results)
 - **Autocomplete**: Real-time search suggestions with keyboard navigation (↑↓ Enter Escape)
 - **Rankings**: Apple Podcasts rankings by region (China, Taiwan, US)
 - **SEO Optimized**: Dynamic metadata, canonical URLs, Schema.org structured data
