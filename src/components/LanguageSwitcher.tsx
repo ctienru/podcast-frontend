@@ -24,18 +24,18 @@ export function LanguageSwitcher({ locale }: Props) {
       <span>|</span>
       <Link
         href={pathname}
-        locale="zh-TW"
-        className={locale === "zh-TW" ? "font-bold" : "hover:underline"}
-      >
-        {t("zh-TW")}
-      </Link>
-      <span>|</span>
-      <Link
-        href={pathname}
         locale="zh-CN"
         className={locale === "zh-CN" ? "font-bold" : "hover:underline"}
       >
         {t("zh-CN")}
+      </Link>
+      <span>|</span>
+      <Link
+        href={pathname}
+        locale="zh-TW"
+        className={locale === "zh-TW" ? "font-bold" : "hover:underline"}
+      >
+        {t("zh-TW")}
       </Link>
     </div>
   );

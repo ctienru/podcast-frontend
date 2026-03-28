@@ -36,9 +36,9 @@ export function LanguageFilterSection({ value, onChange, translations }: Props) 
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="zh-tw">{translations.langZhTw}</SelectItem>
-          <SelectItem value="zh-cn">{translations.langZhCn}</SelectItem>
           <SelectItem value="en">{translations.langEn}</SelectItem>
+          <SelectItem value="zh-cn">{translations.langZhCn}</SelectItem>
+          <SelectItem value="zh-tw">{translations.langZhTw}</SelectItem>
           <SelectItem value="zh-both">{translations.langZhBoth}</SelectItem>
         </SelectContent>
       </Select>

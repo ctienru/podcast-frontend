@@ -85,6 +85,7 @@ export type PagedResult<T> = {
 export type RankingsItem = {
   rank: number;
   showId: string;
+  parentShowId?: string;
   title: string;
   publisher: string;
   imageUrl?: string;

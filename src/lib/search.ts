@@ -18,6 +18,7 @@ export class SearchApiError extends Error {
  * ========================= */
 interface ApiResponse<T> {
   status: "ok" | "partial_success" | "error";
+  warning?: string;
   data?: {
     page?: number;
     size?: number;
@@ -89,7 +90,7 @@ export async function searchShowsFromApi({
   pageSize: number;
   language?: string[];
   mode?: ShowSearchMode;
-}): Promise<PagedResult<Show>> {
+}): Promise<{ result: PagedResult<Show>; warning: string | null }> {
   const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
     `${apiBaseUrl}/search/shows`,
@@ -117,8 +118,10 @@ export async function searchShowsFromApi({
   }
 
   const json = await res.json();
+  const result = ensureOkApiResponse<Show>(json, 1, pageSize);
+  const warning: string | null = json.status === "partial_success" ? (json.warning ?? null) : null;
 
-  return ensureOkApiResponse<Show>(json, 1, pageSize);
+  return { result, warning };
 }
 
 /* =========================
@@ -164,9 +167,9 @@ export async function searchEpisodesFromApi({
   }
 
   const json = await res.json();
+  const result = ensureOkApiResponse<Episode>(json, page, pageSize);
   const searchRequestId: string = json.searchRequestId ?? "";
   const warning: string | null = json.status === "partial_success" ? (json.warning ?? null) : null;
-  const result = ensureOkApiResponse<Episode>(json, page, pageSize);
 
   return { result, searchRequestId, warning };
 }

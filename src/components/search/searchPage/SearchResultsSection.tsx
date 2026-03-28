@@ -31,7 +31,6 @@ export default async function SearchResultsSection({
   let error: string | null = null;
   let schema: object | null = null;
   let searchRequestId: string | null = null;
-  let degradedWarning: string | null = null;
 
   try {
     // Fetch episodes
@@ -46,12 +45,15 @@ export default async function SearchResultsSection({
     episodeResults = episodes.items;
     episodeTotal = episodes.total;
     searchRequestId = reqId || null;
-    degradedWarning = warning;
+
+    if (warning) {
+      console.warn("[search] episode search degraded:", warning, { query, mode });
+    }
 
     // Fetch shows only on first page, always use hybrid mode
     if (page === 1) {
       try {
-        const shows = await searchShowsFromApi({
+        const { result: shows, warning: showWarning } = await searchShowsFromApi({
           query,
           pageSize: SHOWS_PAGE_SIZE,
           language: getLanguageArray(lang),
@@ -59,6 +61,9 @@ export default async function SearchResultsSection({
         });
 
         showResults = shows.items;
+        if (showWarning) {
+          console.warn("[search] show search degraded:", showWarning, { query });
+        }
       } catch (showErr) {
         // If show search fails, just log it and continue
         console.error("Show search failed:", showErr);
@@ -116,13 +121,6 @@ export default async function SearchResultsSection({
           {/* Show banner only on first page */}
           {page === 1 && hasShows && (
             <ShowsBanner shows={showResults} />
-          )}
-
-          {degradedWarning && (
-            <p role="status" className="text-sm text-muted-foreground px-1 pb-2">
-              <span aria-hidden="true" className="mr-1">ℹ️</span>
-              {degradedWarning}
-            </p>
           )}
 
           {hasEpisodes && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SearchMode, LangFilter } from "@/types/search";
 import { MatchBehaviorSection } from "./MatchBehaviorSection";
 import { LanguageFilterSection } from "./LanguageFilterSection";
@@ -49,6 +49,24 @@ export function AdvancedSearchPanel({
   onReset,
   translations,
 }: Props) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      // Ignore clicks inside Radix portals (e.g. SelectContent) which render outside panelRef
+      const path = event.composedPath();
+      const isInsidePortal = path.some(
+        (el) => el instanceof HTMLElement && el.hasAttribute("data-radix-popper-content-wrapper")
+      );
+      if (!isInsidePortal && panelRef.current && !panelRef.current.contains(event.target as Node)) {
+        onToggle();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen, onToggle]);
+
   // Track previous props using state (not ref)
   const [prevProps, setPrevProps] = useState({ currentMode, currentLang });
 
@@ -79,7 +97,7 @@ export function AdvancedSearchPanel({
   };
 
   return (
-    <div className="space-y-4">
+    <div ref={panelRef} className="space-y-4">
       {/* Toggle Button */}
       <Button
         variant="outline"
