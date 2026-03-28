@@ -109,6 +109,40 @@ describe("searchShowsFromApi", () => {
     expect(result.total).toBe(0);
   });
 
+  it("should return warning when status is partial_success", async () => {
+    const mockResponse = {
+      status: "partial_success",
+      warning: "embedding unavailable, using BM25 only",
+      data: {
+        items: [{ showId: "123", title: "Test Podcast", publisher: "Pub" }],
+        total: 1,
+        page: 1,
+        size: 10,
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+
+    const { result, warning } = await searchShowsFromApi({ query: "test", pageSize: 10 });
+
+    expect(warning).toBe("embedding unavailable, using BM25 only");
+    expect(result.items).toHaveLength(1);
+  });
+
+  it("should return null warning when status is ok", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ status: "ok", data: { items: [], total: 0, page: 1, size: 10 } }),
+    });
+
+    const { warning } = await searchShowsFromApi({ query: "test", pageSize: 10 });
+
+    expect(warning).toBeNull();
+  });
+
   it("should send correct request parameters", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
