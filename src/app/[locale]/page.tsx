@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter, Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function HomePage() {
   const router = useRouter();
@@ -40,19 +39,6 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Highlights */}
-      <section className="py-8">
-        <Link href="/rankings" className="block max-w-sm mx-auto">
-          <Card className="hover:bg-accent transition-colors cursor-pointer">
-            <CardContent className="p-4 space-y-1">
-              <h2 className="font-semibold">{t("rankingsTitle")}</h2>
-              <p className="text-sm text-muted-foreground">
-                {t("rankingsDescription")}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-      </section>
     </>
   );
 }
