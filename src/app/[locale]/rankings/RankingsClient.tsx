@@ -90,22 +90,22 @@ export function RankingsClient({
   const [type, setType] = useState(initialType);
   const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
   const [enrichedItems, setEnrichedItems] = useState<RankingsItemEnriched[]>(
-    () => {
-      const items = initialRankings?.items ?? [];
-      // For episodes or empty lists, no enrichment needed
-      if (items.length === 0 || initialType === "episode") {
-        return items;
-      }
-      return items;
-    }
+    initialRankings?.items ?? []
   );
+
+  // Sync enrichedItems when initialRankings prop changes (derived state pattern)
+  const [prevRankings, setPrevRankings] = useState(initialRankings);
+  if (prevRankings !== initialRankings) {
+    setPrevRankings(initialRankings);
+    setEnrichedItems(initialRankings?.items ?? []);
+  }
 
   // Async load show details
   useEffect(() => {
     let isMounted = true;
     const items = initialRankings?.items ?? [];
 
-    // Early return for cases that don't need async enrichment
+    // Episodes don't need enrichment
     if (items.length === 0 || type === "episode") {
       return;
     }
@@ -211,14 +211,10 @@ export function RankingsClient({
               ? PLACEHOLDER_IMAGE
               : item.imageUrl || PLACEHOLDER_IMAGE;
 
-            return (
-              <li key={itemKey} className="flex gap-4 items-start">
-                <div className="w-8 text-right text-2xl font-semibold text-muted-foreground">
-                  {item.rank}
-                </div>
-                <Card className="flex-1">
-                  <CardContent className="p-4">
-                    <article className="flex gap-4 overflow-hidden">
+            const cardContent = (
+              <Card>
+                <CardContent className="p-4">
+                  <article className="flex gap-4 overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element -- external images with onError fallback */}
                       <img
                         src={imgSrc}
@@ -264,6 +260,14 @@ export function RankingsClient({
                     </article>
                   </CardContent>
                 </Card>
+            );
+
+            return (
+              <li key={itemKey} className="flex gap-4 items-start">
+                <div className="w-8 text-right text-2xl font-semibold text-muted-foreground">
+                  {item.rank}
+                </div>
+                <div className="flex-1">{cardContent}</div>
               </li>
             );
           })}
