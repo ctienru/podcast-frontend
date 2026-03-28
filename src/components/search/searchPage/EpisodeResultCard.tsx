@@ -84,11 +84,7 @@ function formatRelativeDate(iso: string) {
   const day = Math.floor(hour / 24);
   if (day < 7) return `${day} days ago`;
 
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return formatAbsoluteDate(iso);
 }
 
 /* =========================

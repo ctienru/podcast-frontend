@@ -161,9 +161,10 @@ describe("EpisodeResultCard", () => {
       const episode = createMockEpisode({ durationSec: 0 });
       await renderEpisodeCard(episode);
 
-      // 0 seconds returns null from formatDuration, so no "min" should appear
-      // Note: The actual format shows "0 min" because 0/60 = 0
+      // 0 seconds returns null from formatDuration, so the meta row should not render a duration.
       expect(screen.getByText("Test Episode Title")).toBeInTheDocument();
+      expect(screen.getByText(/0 min ago/).closest("p")).toHaveTextContent("· 0 min ago");
+      expect(screen.getByText(/0 min ago/).closest("p")).not.toHaveTextContent("0 min ·");
     });
 
     it("should handle undefined duration", async () => {
