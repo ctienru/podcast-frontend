@@ -118,8 +118,8 @@ export async function searchShowsFromApi({
   }
 
   const json = await res.json();
-  const warning: string | null = json.status === "partial_success" ? (json.warning ?? null) : null;
   const result = ensureOkApiResponse<Show>(json, 1, pageSize);
+  const warning: string | null = json.status === "partial_success" ? (json.warning ?? null) : null;
 
   return { result, warning };
 }
@@ -167,9 +167,9 @@ export async function searchEpisodesFromApi({
   }
 
   const json = await res.json();
+  const result = ensureOkApiResponse<Episode>(json, page, pageSize);
   const searchRequestId: string = json.searchRequestId ?? "";
   const warning: string | null = json.status === "partial_success" ? (json.warning ?? null) : null;
-  const result = ensureOkApiResponse<Episode>(json, page, pageSize);
 
   return { result, searchRequestId, warning };
 }
