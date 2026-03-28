@@ -47,7 +47,7 @@ export default async function SearchResultsSection({
     searchRequestId = reqId || null;
 
     if (warning) {
-      console.error("[search] episode search degraded:", warning, { query, mode });
+      console.warn("[search] episode search degraded:", warning, { query, mode });
     }
 
     // Fetch shows only on first page, always use hybrid mode
@@ -62,7 +62,7 @@ export default async function SearchResultsSection({
 
         showResults = shows.items;
         if (showWarning) {
-          console.error("[search] show search degraded:", showWarning, { query });
+          console.warn("[search] show search degraded:", showWarning, { query });
         }
       } catch (showErr) {
         // If show search fails, just log it and continue

@@ -18,6 +18,7 @@ export class SearchApiError extends Error {
  * ========================= */
 interface ApiResponse<T> {
   status: "ok" | "partial_success" | "error";
+  warning?: string;
   data?: {
     page?: number;
     size?: number;
