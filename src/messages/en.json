@@ -5,7 +5,7 @@
   },
   "home": {
     "heroTitle": "Search Podcast Episodes",
-    "heroDescription": "Search across 170,000+ episodes from Apple Podcasts.",
+    "heroDescription": "Search across 1.4M+ episodes from Apple Podcasts.",
     "rankingsTitle": "Podcast Rankings",
     "rankingsDescription": "Apple Podcasts charts in Taiwan and the US."
   },
@@ -48,6 +48,8 @@
     "reset": "Reset",
     "filtersApplied": "Filters applied:",
     "editFilters": "Edit",
+    "degradedWarningTitle": "Some search results may be incomplete",
+    "degradedWarningDescription": "We fell back to partial results, but the available matches are still shown below.",
     "tooShortTitle": "Search query too short",
     "tooShortDescription": "Please enter at least {min} characters to search.",
     "noEpisodesTitle": "No episodes found",

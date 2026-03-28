@@ -5,7 +5,7 @@
   },
   "home": {
     "heroTitle": "搜索 Podcast 单集",
-    "heroDescription": "搜索超过 17 万集 Apple Podcasts 单集内容。",
+    "heroDescription": "搜索超过 140 万集 Apple Podcasts 单集内容。",
     "rankingsTitle": "Podcast 排行榜",
     "rankingsDescription": "中国区的 Apple Podcasts 排行榜。"
   },
@@ -48,6 +48,8 @@
     "reset": "重置",
     "filtersApplied": "已应用筛选：",
     "editFilters": "编辑",
+    "degradedWarningTitle": "部分搜索结果可能不完整",
+    "degradedWarningDescription": "系统已回退到可用的部分结果，但目前找到的内容仍会正常显示在下方。",
     "tooShortTitle": "搜索词太短",
     "tooShortDescription": "请输入至少 {min} 个字符以搜索。",
     "noEpisodesTitle": "找不到单集",
