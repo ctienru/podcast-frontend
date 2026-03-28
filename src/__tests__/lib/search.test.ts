@@ -56,7 +56,7 @@ describe("searchShowsFromApi", () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await searchShowsFromApi({ query: "test", pageSize: 10 });
+    const { result } = await searchShowsFromApi({ query: "test", pageSize: 10 });
 
     expect(result.items).toHaveLength(1);
     expect(result.items[0].title).toBe("Test Podcast");
@@ -103,7 +103,7 @@ describe("searchShowsFromApi", () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await searchShowsFromApi({ query: "test", pageSize: 10 });
+    const { result } = await searchShowsFromApi({ query: "test", pageSize: 10 });
 
     expect(result.items).toEqual([]);
     expect(result.total).toBe(0);

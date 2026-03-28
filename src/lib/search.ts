@@ -89,7 +89,7 @@ export async function searchShowsFromApi({
   pageSize: number;
   language?: string[];
   mode?: ShowSearchMode;
-}): Promise<PagedResult<Show>> {
+}): Promise<{ result: PagedResult<Show>; warning: string | null }> {
   const apiBaseUrl = getApiBaseUrl();
   const res = await fetch(
     `${apiBaseUrl}/search/shows`,
@@ -117,8 +117,10 @@ export async function searchShowsFromApi({
   }
 
   const json = await res.json();
+  const warning: string | null = json.status === "partial_success" ? (json.warning ?? null) : null;
+  const result = ensureOkApiResponse<Show>(json, 1, pageSize);
 
-  return ensureOkApiResponse<Show>(json, 1, pageSize);
+  return { result, warning };
 }
 
 /* =========================
