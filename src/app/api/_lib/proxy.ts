@@ -64,13 +64,22 @@ export async function proxyToBackend(
       ...(method === "POST" && bodyText ? { body: bodyText } : {}),
     });
 
-    const responseText = await upstreamResponse.text();
+    const responseHeaders = new Headers();
+    const contentType = upstreamResponse.headers.get("content-type");
+    const cacheControl = upstreamResponse.headers.get("cache-control");
+    const contentEncoding = upstreamResponse.headers.get("content-encoding");
 
-    return new Response(responseText, {
+    responseHeaders.set("content-type", contentType ?? "application/json");
+    if (cacheControl) {
+      responseHeaders.set("cache-control", cacheControl);
+    }
+    if (contentEncoding) {
+      responseHeaders.set("content-encoding", contentEncoding);
+    }
+
+    return new Response(upstreamResponse.body, {
       status: upstreamResponse.status,
-      headers: {
-        "content-type": upstreamResponse.headers.get("content-type") ?? "application/json",
-      },
+      headers: responseHeaders,
     });
   } catch (error) {
     return Response.json(

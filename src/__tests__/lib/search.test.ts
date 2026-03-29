@@ -450,16 +450,22 @@ describe("batchGetShowDetailsFromApi", () => {
   });
 
   it("fetches show details through frontend api proxy", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
           status: "ok",
           data: {
             "show-1": { showId: "show-1", title: "Podcast 1" },
           },
         }),
-    });
+        {
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      )
+    );
 
     const result = await batchGetShowDetailsFromApi(["show-1", "show-2"]);
 

@@ -6,19 +6,19 @@ import { GET as batchShowsGet } from "@/app/api/shows/batch/route";
 import { POST as clickLogPost } from "@/app/api/logs/click/route";
 
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
 
 describe("frontend api proxy routes", () => {
   const originalInternalBase = process.env.SEARCH_API_INTERNAL_BASE;
 
   beforeEach(() => {
     process.env.SEARCH_API_INTERNAL_BASE = "https://backend.example.com/api";
+    vi.stubGlobal("fetch", mockFetch);
     mockFetch.mockReset();
   });
 
   afterEach(() => {
     process.env.SEARCH_API_INTERNAL_BASE = originalInternalBase;
-    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("forwards episode search body and content type", async () => {

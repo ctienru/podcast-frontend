@@ -1,8 +1,19 @@
 import { headers } from "next/headers";
 
-export function getRequestOrigin(headersList: Headers): string {
-  const forwardedProto = headersList.get("x-forwarded-proto");
-  const forwardedHost = headersList.get("x-forwarded-host");
+type HeaderReader = {
+  get(name: string): string | null;
+};
+
+function getFirstForwardedValue(value: string | null): string | null {
+  if (!value) return null;
+
+  const firstValue = value.split(",")[0]?.trim();
+  return firstValue || null;
+}
+
+export function getRequestOrigin(headersList: HeaderReader): string {
+  const forwardedProto = getFirstForwardedValue(headersList.get("x-forwarded-proto"));
+  const forwardedHost = getFirstForwardedValue(headersList.get("x-forwarded-host"));
   const host = forwardedHost ?? headersList.get("host");
 
   if (host) {
