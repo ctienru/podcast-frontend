@@ -5,6 +5,9 @@ import { RankingsClient } from "@/app/[locale]/rankings/RankingsClient";
 import type { RankingsResult, RankingsItem } from "@/types/search";
 
 const mockPush = vi.fn();
+const { mockBatchGetShowDetailsFromApi } = vi.hoisted(() => ({
+    mockBatchGetShowDetailsFromApi: vi.fn(),
+}));
 
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
@@ -13,8 +16,15 @@ vi.mock("next/navigation", () => ({
     useSearchParams: () => new URLSearchParams(),
 }));
 
+vi.mock("@/lib/search", () => ({
+    batchGetShowDetailsFromApi: mockBatchGetShowDetailsFromApi,
+}));
+
 beforeEach(() => {
     vi.clearAllMocks();
+    mockBatchGetShowDetailsFromApi.mockImplementation(
+        () => new Promise(() => {})
+    );
     Object.assign(navigator, {
         clipboard: {
             writeText: vi.fn().mockResolvedValue(undefined),
@@ -501,6 +511,56 @@ describe("RankingsClient", () => {
 
             const buttons = screen.getAllByRole("button");
             expect(buttons.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe("enrichment behavior", () => {
+        it("loads show details through the batch API for podcast rankings", async () => {
+            mockBatchGetShowDetailsFromApi.mockResolvedValueOnce({
+                "show-1": {
+                    showId: "show-1",
+                    description: "Deep dives into AI",
+                    categories: ["Technology", "News"],
+                    episodeCount: 321,
+                },
+            });
+
+            render(
+                <RankingsClient
+                    initialRankings={createMockRankings()}
+                    initialRegion="tw"
+                    initialType="podcast"
+                    locale="en"
+                    error={null}
+                    translations={defaultTranslations}
+                />
+            );
+
+            expect(mockBatchGetShowDetailsFromApi).toHaveBeenCalledWith(["show-1"]);
+            expect(await screen.findByText("Deep dives into AI")).toBeInTheDocument();
+            expect(screen.getByText("Technology")).toBeInTheDocument();
+        });
+
+        it("falls back to base rankings content when enrichment fails", async () => {
+            const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+            mockBatchGetShowDetailsFromApi.mockRejectedValueOnce(new Error("network down"));
+
+            render(
+                <RankingsClient
+                    initialRankings={createMockRankings()}
+                    initialRegion="tw"
+                    initialType="podcast"
+                    locale="en"
+                    error={null}
+                    translations={defaultTranslations}
+                />
+            );
+
+            expect(await screen.findByText("Top Podcast")).toBeInTheDocument();
+            expect(screen.getByText(/100 episodes/)).toBeInTheDocument();
+            expect(consoleErrorSpy).toHaveBeenCalled();
+
+            consoleErrorSpy.mockRestore();
         });
     });
 });

@@ -3,6 +3,7 @@ import { SearchSummary } from "@/components/search/searchPage/SearchSummary";
 import { SearchEmpty } from "@/components/search/SearchEmpty";
 import { SearchError } from "@/components/search/SearchError";
 import { ShowsBanner } from "@/components/search/searchPage/ShowsBanner";
+import { SearchWarningBanner } from "@/components/search/searchPage/SearchWarningBanner";
 import { searchEpisodesFromApi, searchShowsFromApi } from "@/lib/search";
 import { getLanguageArray } from "@/app/[locale]/search/utils";
 import { buildSearchItemListSchema } from "@/lib/schema";
@@ -31,6 +32,7 @@ export default async function SearchResultsSection({
   let error: string | null = null;
   let schema: object | null = null;
   let searchRequestId: string | null = null;
+  const warnings: string[] = [];
 
   try {
     // Fetch episodes
@@ -48,6 +50,7 @@ export default async function SearchResultsSection({
 
     if (warning) {
       console.warn("[search] episode search degraded:", warning, { query, mode });
+      warnings.push(warning);
     }
 
     // Fetch shows only on first page, always use hybrid mode
@@ -63,6 +66,7 @@ export default async function SearchResultsSection({
         showResults = shows.items;
         if (showWarning) {
           console.warn("[search] show search degraded:", showWarning, { query });
+          warnings.push(showWarning);
         }
       } catch (showErr) {
         // If show search fails, just log it and continue
@@ -109,6 +113,8 @@ export default async function SearchResultsSection({
         <SearchEmpty query={query} />
       ) : (
         <>
+          <SearchWarningBanner warnings={warnings} />
+
           {schema && (
             <script
               type="application/ld+json"

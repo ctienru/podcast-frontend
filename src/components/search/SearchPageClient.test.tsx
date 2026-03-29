@@ -5,11 +5,12 @@ import { SearchPageClient } from "./SearchPageClient";
 
 const mockPush = vi.fn();
 const mockSearchParams = new URLSearchParams();
+let mockLocale = "zh-TW";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
   useSearchParams: () => mockSearchParams,
-  useParams: () => ({ locale: "zh-TW" }),
+  useParams: () => ({ locale: mockLocale }),
 }));
 
 const defaultTranslations = {
@@ -40,9 +41,11 @@ const defaultTranslations = {
 describe("SearchPageClient", () => {
   beforeEach(() => {
     mockPush.mockClear();
+    mockLocale = "zh-TW";
     mockSearchParams.delete("mode");
     mockSearchParams.delete("lang");
     mockSearchParams.delete("page");
+    mockSearchParams.delete("q");
   });
 
   describe("Advanced Search Panel", () => {
@@ -212,6 +215,52 @@ describe("SearchPageClient", () => {
     });
   });
 
+  describe("locale-aware defaults across locales", () => {
+    it("omits lang param for en locale when selected lang matches locale default", async () => {
+      const user = userEvent.setup();
+      mockLocale = "en";
+      mockSearchParams.set("q", "ai");
+
+      render(
+        <SearchPageClient
+          currentMode="hybrid"
+          currentLang="en"
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(screen.getByRole("button", { name: /advanced/i }));
+      await user.click(screen.getByRole("button", { name: /apply filters/i }));
+
+      await waitFor(() => {
+        const url = mockPush.mock.calls[mockPush.mock.calls.length - 1][0];
+        expect(url).not.toContain("lang=");
+      });
+    });
+
+    it("omits lang param for zh-CN locale when selected lang matches locale default", async () => {
+      const user = userEvent.setup();
+      mockLocale = "zh-CN";
+      mockSearchParams.set("q", "科技");
+
+      render(
+        <SearchPageClient
+          currentMode="hybrid"
+          currentLang="zh-cn"
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(screen.getByRole("button", { name: /advanced/i }));
+      await user.click(screen.getByRole("button", { name: /apply filters/i }));
+
+      await waitFor(() => {
+        const url = mockPush.mock.calls[mockPush.mock.calls.length - 1][0];
+        expect(url).not.toContain("lang=");
+      });
+    });
+  });
+
   describe("handleApply — mode URL logic", () => {
     it("default mode (hybrid): omits mode param from URL", async () => {
       const user = userEvent.setup();
@@ -285,6 +334,33 @@ describe("SearchPageClient", () => {
         expect(url).not.toContain("mode=");
         expect(url).not.toContain("lang=");
       });
+    });
+  });
+
+  describe("filters applied state", () => {
+    it("hides the applied bar when using default filters", () => {
+      render(
+        <SearchPageClient
+          currentMode="hybrid"
+          currentLang="zh-tw"
+          translations={defaultTranslations}
+        />
+      );
+
+      expect(screen.queryByTestId("filters-applied-bar")).not.toBeInTheDocument();
+    });
+
+    it("shows the applied bar when using non-default filters", () => {
+      render(
+        <SearchPageClient
+          currentMode="bm25"
+          currentLang="en"
+          translations={defaultTranslations}
+        />
+      );
+
+      expect(screen.getByTestId("filters-applied-bar")).toBeInTheDocument();
+      expect(screen.getByText(/filters applied:/i)).toBeInTheDocument();
     });
   });
 });

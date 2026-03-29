@@ -5,7 +5,7 @@
   },
   "home": {
     "heroTitle": "搜尋 Podcast 單集",
-    "heroDescription": "搜尋超過 17 萬集 Apple Podcasts 單集內容。",
+    "heroDescription": "搜尋超過 140 萬集 Apple Podcasts 單集內容。",
     "rankingsTitle": "Podcast 排行榜",
     "rankingsDescription": "台灣與美國的 Apple Podcasts 排行榜。"
   },
@@ -48,6 +48,8 @@
     "reset": "重設",
     "filtersApplied": "已套用篩選：",
     "editFilters": "編輯",
+    "degradedWarningTitle": "部分搜尋結果可能不完整",
+    "degradedWarningDescription": "系統已退回可用的部分結果，但目前找到的內容仍會正常顯示在下方。",
     "tooShortTitle": "搜尋字詞太短",
     "tooShortDescription": "請輸入至少 {min} 個字元以搜尋。",
     "noEpisodesTitle": "找不到單集",
