@@ -34,18 +34,13 @@ interface ApiResponse<T> {
  * Helpers
  * ========================= */
 
-// Get API base URL - use localhost for client-side, backend for server-side
-function getApiBaseUrl(): string {
-  const envUrl = process.env.NEXT_PUBLIC_SEARCH_API_BASE;
-
-  // If running on server-side (Node.js environment)
-  if (typeof window === "undefined") {
-    // Replace localhost with backend for Docker internal network
-    return envUrl?.replace("localhost", "backend") ?? "http://backend:8080/api";
+function getFrontendApiUrl(path: string, baseUrl?: string): string {
+  if (typeof window !== "undefined") {
+    return path;
   }
 
-  // Client-side uses the environment variable as-is (localhost)
-  return envUrl ?? "http://localhost:8080/api";
+  const resolvedBaseUrl = (baseUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  return `${resolvedBaseUrl}${path}`;
 }
 
 function ensureOkApiResponse<T>(
@@ -85,15 +80,17 @@ export async function searchShowsFromApi({
   pageSize,
   language,
   mode,
+  baseUrl,
 }: {
   query: string;
   pageSize: number;
   language?: string[];
   mode?: ShowSearchMode;
+  baseUrl?: string;
 }): Promise<{ result: PagedResult<Show>; warning: string | null }> {
-  const apiBaseUrl = getApiBaseUrl();
+  const apiUrl = getFrontendApiUrl("/api/search/shows", baseUrl);
   const res = await fetch(
-    `${apiBaseUrl}/search/shows`,
+    apiUrl,
     {
       method: "POST",
       headers: {
@@ -133,16 +130,18 @@ export async function searchEpisodesFromApi({
   pageSize,
   lang,
   mode,
+  baseUrl,
 }: {
   query: string;
   page: number;
   pageSize: number;
   lang: LangFilter;
   mode?: SearchMode;
+  baseUrl?: string;
 }): Promise<{ result: PagedResult<Episode>; searchRequestId: string; warning: string | null }> {
-  const apiBaseUrl = getApiBaseUrl();
+  const apiUrl = getFrontendApiUrl("/api/search/episodes", baseUrl);
   const res = await fetch(
-    `${apiBaseUrl}/search/episodes`,
+    apiUrl,
     {
       method: "POST",
       headers: {
@@ -181,19 +180,21 @@ export async function getRankingsFromApi({
   region = "tw",
   type = "podcast",
   limit = 20,
+  baseUrl,
 }: {
   region?: string;
   type?: string;
   limit?: number;
+  baseUrl?: string;
 }): Promise<RankingsResult> {
-  const apiBaseUrl = getApiBaseUrl();
+  const apiUrl = getFrontendApiUrl("/api/rankings", baseUrl);
   const params = new URLSearchParams({
     region,
     type,
     limit: String(limit),
   });
 
-  const res = await fetch(`${apiBaseUrl}/rankings?${params}`, {
+  const res = await fetch(`${apiUrl}?${params}`, {
     method: "GET",
     cache: "no-store",
   });
@@ -232,18 +233,19 @@ export async function getRankingsFromApi({
  * Shows Batch
  * ========================= */
 export async function batchGetShowDetailsFromApi(
-  showIds: string[]
+  showIds: string[],
+  baseUrl?: string
 ): Promise<Record<string, ShowDetail>> {
   if (showIds.length === 0) {
     return {};
   }
 
-  const apiBaseUrl = getApiBaseUrl();
+  const apiUrl = getFrontendApiUrl("/api/shows/batch", baseUrl);
   const params = new URLSearchParams({
     ids: showIds.join(","),
   });
 
-  const res = await fetch(`${apiBaseUrl}/shows/batch?${params}`, {
+  const res = await fetch(`${apiUrl}?${params}`, {
     method: "GET",
     cache: "no-store",
   });
@@ -270,4 +272,3 @@ export async function batchGetShowDetailsFromApi(
 
   return json.data ?? {};
 }
-

@@ -28,6 +28,7 @@ Podcast episode search frontend built with Next.js 16 and React 19, featuring se
   - Match behavior options: Smart (recommended), Keyword, Exact phrase
   - Language filter: Any language, Chinese only, English only
   - Draft state management: changes apply only when user confirms
+- **Frontend API Proxy**: Browser and SSR calls go through frontend-owned `/api/...` route handlers, then proxy to the backend using a server-only internal base URL
 - **Click Analytics**: Episode click events tracked via `sendBeacon` to `/api/logs/click`
 - **Partial Success Handling**: When backend returns `partial_success` (embedding unavailable; BM25-only results), the condition is logged server-side for diagnostics but no warning banner is shown in the UI
 - **Autocomplete**: Real-time search suggestions with keyboard navigation (↑↓ Enter Escape)
@@ -98,7 +99,8 @@ npm install
 Create `.env.local`:
 
 ```bash
-NEXT_PUBLIC_SEARCH_API_BASE=http://localhost:8080/api
+SEARCH_API_INTERNAL_BASE=http://localhost:8080/api
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 ### 3. Start Development Server
@@ -121,7 +123,7 @@ Open http://localhost:3000 to view the app.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `NEXT_PUBLIC_SEARCH_API_BASE` | Backend API URL | `http://localhost:8080/api` |
+| `SEARCH_API_INTERNAL_BASE` | Backend API URL used by frontend route handlers | `http://localhost:8080/api` |
 | `NEXT_PUBLIC_SITE_URL` | Frontend URL (for SEO) | `http://localhost:3000` |
 
 ## Available Scripts
@@ -221,7 +223,8 @@ docker build -t podcast-frontend .
 
 # Run container
 docker run -p 3000:3000 \
-  -e NEXT_PUBLIC_SEARCH_API_BASE=http://backend:8080/api \
+  -e SEARCH_API_INTERNAL_BASE=http://backend:8080/api \
+  -e NEXT_PUBLIC_SITE_URL=http://localhost:3000 \
   podcast-frontend
 ```
 

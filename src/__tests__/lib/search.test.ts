@@ -4,6 +4,7 @@ import {
   searchShowsFromApi,
   searchEpisodesFromApi,
   getRankingsFromApi,
+  batchGetShowDetailsFromApi,
 } from "@/lib/search";
 
 // Mock fetch globally
@@ -152,7 +153,7 @@ describe("searchShowsFromApi", () => {
     await searchShowsFromApi({ query: "podcast", pageSize: 5 });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining("/search/shows"),
+      "/api/search/shows",
       expect.objectContaining({
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -281,7 +282,7 @@ describe("searchEpisodesFromApi", () => {
     await searchEpisodesFromApi({ query: "search", page: 3, pageSize: 20, lang: "en" });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.any(String),
+      "/api/search/episodes",
       expect.objectContaining({
         body: JSON.stringify({ q: "search", page: 3, size: 20, lang: "en" }),
       })
@@ -297,7 +298,7 @@ describe("searchEpisodesFromApi", () => {
     await searchEpisodesFromApi({ query: "test", page: 1, pageSize: 10, lang: "zh-tw", mode: "exact" });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.any(String),
+      "/api/search/episodes",
       expect.objectContaining({
         body: JSON.stringify({ q: "test", page: 1, size: 10, lang: "zh-tw", mode: "exact" }),
       })
@@ -313,7 +314,7 @@ describe("searchEpisodesFromApi", () => {
     await searchEpisodesFromApi({ query: "keyword search", page: 1, pageSize: 10, lang: "zh-tw", mode: "bm25" });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.any(String),
+      "/api/search/episodes",
       expect.objectContaining({
         body: JSON.stringify({ q: "keyword search", page: 1, size: 10, lang: "zh-tw", mode: "bm25" }),
       })
@@ -329,7 +330,7 @@ describe("searchEpisodesFromApi", () => {
     await searchEpisodesFromApi({ query: "test", page: 1, pageSize: 10, lang: "en" });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.any(String),
+      "/api/search/episodes",
       expect.objectContaining({
         body: JSON.stringify({ q: "test", page: 1, size: 10, lang: "en" }),
       })
@@ -381,7 +382,7 @@ describe("getRankingsFromApi", () => {
     await getRankingsFromApi({});
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringMatching(/region=tw.*type=podcast.*limit=20/),
+      expect.stringMatching(/^\/api\/rankings\?region=tw.*type=podcast.*limit=20/),
       expect.any(Object)
     );
   });
@@ -433,5 +434,42 @@ describe("getRankingsFromApi", () => {
     expect(result.region).toBe("us");
     expect(result.type).toBe("episode");
     expect(result.items).toEqual([]);
+  });
+});
+
+describe("batchGetShowDetailsFromApi", () => {
+  beforeEach(() => {
+    mockFetch.mockClear();
+  });
+
+  it("returns empty object when showIds is empty", async () => {
+    const result = await batchGetShowDetailsFromApi([]);
+
+    expect(result).toEqual({});
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("fetches show details through frontend api proxy", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          status: "ok",
+          data: {
+            "show-1": { showId: "show-1", title: "Podcast 1" },
+          },
+        }),
+    });
+
+    const result = await batchGetShowDetailsFromApi(["show-1", "show-2"]);
+
+    expect(result["show-1"]).toEqual({ showId: "show-1", title: "Podcast 1" });
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/shows/batch?ids=show-1%2Cshow-2",
+      expect.objectContaining({
+        method: "GET",
+        cache: "no-store",
+      })
+    );
   });
 });

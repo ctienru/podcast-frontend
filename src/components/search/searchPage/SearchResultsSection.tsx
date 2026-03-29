@@ -7,6 +7,7 @@ import { SearchWarningBanner } from "@/components/search/searchPage/SearchWarnin
 import { searchEpisodesFromApi, searchShowsFromApi } from "@/lib/search";
 import { getLanguageArray } from "@/app/[locale]/search/utils";
 import { buildSearchItemListSchema } from "@/lib/schema";
+import { getRequestOriginFromCurrentRequest } from "@/lib/request-origin";
 import type { Episode, Show, SearchMode, LangFilter } from "@/types/search";
 
 const EPISODE_PAGE_SIZE = 10;
@@ -26,6 +27,7 @@ export default async function SearchResultsSection({
   lang,
   mode,
 }: Props) {
+  const requestOrigin = await getRequestOriginFromCurrentRequest();
   let episodeResults: Episode[] = [];
   let episodeTotal = 0;
   let showResults: Show[] = [];
@@ -42,6 +44,7 @@ export default async function SearchResultsSection({
       pageSize: EPISODE_PAGE_SIZE,
       lang,
       mode,
+      baseUrl: requestOrigin,
     });
 
     episodeResults = episodes.items;
@@ -61,6 +64,7 @@ export default async function SearchResultsSection({
           pageSize: SHOWS_PAGE_SIZE,
           language: getLanguageArray(lang),
           mode: "hybrid", // Always use hybrid for shows
+          baseUrl: requestOrigin,
         });
 
         showResults = shows.items;

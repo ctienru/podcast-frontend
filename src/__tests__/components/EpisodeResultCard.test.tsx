@@ -341,7 +341,7 @@ describe("EpisodeResultCard", () => {
       fireEvent.click(screen.getByRole("article"));
 
       expect(navigator.sendBeacon).toHaveBeenCalledWith(
-        expect.stringContaining("/log/click"),
+        "/api/logs/click",
         expect.any(Blob)
       );
       const blob = (navigator.sendBeacon as ReturnType<typeof vi.fn>).mock.calls[0][1] as Blob;
@@ -394,31 +394,12 @@ describe("EpisodeResultCard", () => {
       fireEvent.click(screen.getByRole("link"));
 
       expect(navigator.sendBeacon).toHaveBeenCalledWith(
-        expect.stringContaining("/log/click"),
+        "/api/logs/click",
         expect.any(Blob)
       );
       const blob = (navigator.sendBeacon as ReturnType<typeof vi.fn>).mock.calls[0][1] as Blob;
       const body = JSON.parse(await readBlob(blob));
       expect(body.requestId).toBe("req-link");
-    });
-
-    it("does not send beacon when NEXT_PUBLIC_SEARCH_API_BASE is missing", async () => {
-      const originalBaseUrl = process.env.NEXT_PUBLIC_SEARCH_API_BASE;
-      process.env.NEXT_PUBLIC_SEARCH_API_BASE = "";
-
-      const episode = createMockEpisode();
-      await renderEpisodeCardWithRealTimers(episode, {
-        rank: 1,
-        searchRequestId: "req-no-base",
-        query: "test",
-        selectedLang: "zh-tw",
-      });
-
-      fireEvent.click(screen.getByRole("article"));
-
-      expect(navigator.sendBeacon).not.toHaveBeenCalled();
-
-      process.env.NEXT_PUBLIC_SEARCH_API_BASE = originalBaseUrl;
     });
   });
 });
