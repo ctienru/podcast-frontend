@@ -18,7 +18,6 @@ COPY . .
 
 # Set environment variables
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_PUBLIC_SEARCH_API_BASE=http://backend:8080/api
 
 # Build Next.js
 RUN npm run build

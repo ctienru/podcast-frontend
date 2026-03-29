@@ -115,8 +115,6 @@ export function EpisodeResultCard({
   function handleClick() {
     const searchResultTimestamp = searchResultTimestampRef.current;
     if (!searchRequestId || searchResultTimestamp === null || !language) return;
-    const baseUrl = process.env.NEXT_PUBLIC_SEARCH_API_BASE;
-    if (!baseUrl) return;
 
     const payload = buildClickLogPayload({
       requestId: searchRequestId,
@@ -129,7 +127,7 @@ export function EpisodeResultCard({
     });
 
     navigator.sendBeacon(
-      `${baseUrl}/log/click`,
+      "/api/logs/click",
       new Blob([JSON.stringify(payload)], { type: "application/json" })
     );
   }

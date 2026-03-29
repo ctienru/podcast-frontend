@@ -49,11 +49,13 @@ describe("RankingsPage", () => {
     );
 
     expect(mockSetRequestLocale).toHaveBeenCalledWith("zh-TW");
-    expect(mockGetRankingsFromApi).toHaveBeenCalledWith({
-      region: "tw",
-      type: "podcast",
-      limit: 100,
-    });
+    expect(mockGetRankingsFromApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        region: "tw",
+        type: "podcast",
+        limit: 100,
+      })
+    );
     expect(screen.getByTestId("rankings-client")).toHaveTextContent("tw:podcast");
   });
 
@@ -65,11 +67,13 @@ describe("RankingsPage", () => {
       })
     );
 
-    expect(mockGetRankingsFromApi).toHaveBeenCalledWith({
-      region: "cn",
-      type: "podcast",
-      limit: 100,
-    });
+    expect(mockGetRankingsFromApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        region: "cn",
+        type: "podcast",
+        limit: 100,
+      })
+    );
     expect(screen.getByTestId("rankings-client")).toHaveTextContent("cn:podcast");
   });
 
@@ -81,11 +85,13 @@ describe("RankingsPage", () => {
       })
     );
 
-    expect(mockGetRankingsFromApi).toHaveBeenCalledWith({
-      region: "us",
-      type: "episode",
-      limit: 100,
-    });
+    expect(mockGetRankingsFromApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        region: "us",
+        type: "episode",
+        limit: 100,
+      })
+    );
     expect(screen.getByTestId("rankings-client")).toHaveTextContent("us:episode");
   });
 });

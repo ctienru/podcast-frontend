@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getRankingsFromApi } from "@/lib/search";
+import { getRequestOriginFromCurrentRequest } from "@/lib/request-origin";
 import { RankingsClient } from "./RankingsClient";
 
 type Props = {
@@ -39,6 +40,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function RankingsPage({ params, searchParams }: Props) {
   const { locale } = await params;
   const { region, type = "podcast" } = await searchParams;
+  const requestOrigin = await getRequestOriginFromCurrentRequest();
   const defaultRegion = locale === "zh-TW" ? "tw" : locale === "zh-CN" ? "cn" : "us";
   const resolvedRegion = region ?? defaultRegion;
   setRequestLocale(locale);
@@ -53,6 +55,7 @@ export default async function RankingsPage({ params, searchParams }: Props) {
       region: resolvedRegion,
       type,
       limit: 100,
+      baseUrl: requestOrigin,
     });
   } catch (e) {
     error = e instanceof Error ? e.message : "Failed to load rankings";
