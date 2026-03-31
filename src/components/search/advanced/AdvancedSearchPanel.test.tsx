@@ -331,4 +331,51 @@ describe("AdvancedSearchPanel", () => {
       });
     });
   });
+
+  describe("Outside click behavior", () => {
+    it("should close panel when clicking outside", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <AdvancedSearchPanel
+          isOpen={true}
+          onToggle={onToggle}
+          currentMode="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
+          onApply={onApply}
+          onReset={onReset}
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(document.body);
+
+      await waitFor(() => {
+        expect(onToggle).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it("should not close panel when selecting a language option", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <AdvancedSearchPanel
+          isOpen={true}
+          onToggle={onToggle}
+          currentMode="hybrid"
+          currentLang="zh-tw"
+          defaultLang="zh-tw"
+          onApply={onApply}
+          onReset={onReset}
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(screen.getByRole("combobox"));
+      await user.click(screen.getByRole("option", { name: /simplified chinese/i }));
+
+      expect(onToggle).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -8,6 +8,22 @@ import { ActionButtons } from "./ActionButtons";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Check if a click target is inside a select portal (Radix UI dropdown, slot-based select, or listbox).
+ * Used by AdvancedSearchPanel to detect clicks outside the panel and its associated dropdowns.
+ */
+const isEventInsideSelectPortal = (target: EventTarget | null): boolean => {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  return Boolean(
+    target.closest("[data-radix-popper-content-wrapper]") ||
+    target.closest("[data-slot='select-content']") ||
+    target.closest("[role='listbox']")
+  );
+};
+
 type Props = {
   isOpen: boolean;
   onToggle: () => void;
@@ -50,39 +66,44 @@ export function AdvancedSearchPanel({
   translations,
 }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
+  // Internal state for draft values.
+  const [draftMode, setDraftMode] = useState<SearchMode>(currentMode);
+  const [draftLang, setDraftLang] = useState<LangFilter>(currentLang);
+  // Track previous prop values to sync drafts during render when props change while panel is open.
+  const [prevMode, setPrevMode] = useState(currentMode);
+  const [prevLang, setPrevLang] = useState(currentLang);
+
+  if (isOpen && (prevMode !== currentMode || prevLang !== currentLang)) {
+    setPrevMode(currentMode);
+    setPrevLang(currentLang);
+    setDraftMode(currentMode);
+    setDraftLang(currentLang);
+  }
 
   useEffect(() => {
     if (!isOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
-      // Ignore clicks inside Radix portals (e.g. SelectContent) which render outside panelRef
-      const path = event.composedPath();
-      const isInsidePortal = path.some(
-        (el) => el instanceof HTMLElement && el.hasAttribute("data-radix-popper-content-wrapper")
-      );
-      if (!isInsidePortal && panelRef.current && !panelRef.current.contains(event.target as Node)) {
+      const clickedInsidePanel =
+        panelRef.current && panelRef.current.contains(event.target as Node);
+      const clickedInsideSelectPortal = isEventInsideSelectPortal(event.target);
+
+      if (!clickedInsidePanel && !clickedInsideSelectPortal) {
         onToggle();
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onToggle]);
 
-  // Track previous props using state (not ref)
-  const [prevProps, setPrevProps] = useState({ currentMode, currentLang });
-
-  // Internal state for draft values - reset when props change
-  const [draftMode, setDraftMode] = useState<SearchMode>(currentMode);
-  const [draftLang, setDraftLang] = useState<LangFilter>(currentLang);
-
-  // Check if props changed and reset draft values during render
-  if (
-    prevProps.currentMode !== currentMode ||
-    prevProps.currentLang !== currentLang
-  ) {
-    setPrevProps({ currentMode, currentLang });
-    setDraftMode(currentMode);
-    setDraftLang(currentLang);
-  }
+  const handleToggle = () => {
+    if (!isOpen) {
+      // Sync draft values with current props when opening the panel
+      setDraftMode(currentMode);
+      setDraftLang(currentLang);
+    }
+    onToggle();
+  };
 
   const handleApply = () => {
     onApply(draftMode, draftLang);
@@ -101,7 +122,7 @@ export function AdvancedSearchPanel({
       {/* Toggle Button */}
       <Button
         variant="outline"
-        onClick={onToggle}
+        onClick={handleToggle}
         className="gap-2"
       >
         {translations.advanced}

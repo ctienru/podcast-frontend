@@ -75,6 +75,8 @@ function ensureOkApiResponse<T>(
  * ========================= */
 export type ShowSearchMode = "bm25" | "knn" | "hybrid";
 
+const TRANSIENT_UPSTREAM_STATUSES = new Set([502, 503, 504]);
+
 export async function searchShowsFromApi({
   query,
   pageSize,
@@ -108,6 +110,18 @@ export async function searchShowsFromApi({
   );
 
   if (!res.ok) {
+    if (TRANSIENT_UPSTREAM_STATUSES.has(res.status)) {
+      return {
+        result: {
+          page: 1,
+          pageSize,
+          total: 0,
+          items: [],
+        },
+        warning: `Show search temporarily unavailable (${res.status})`,
+      };
+    }
+
     throw new SearchApiError(
       `Show search API error: ${res.status}`,
       res.status

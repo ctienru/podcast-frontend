@@ -39,7 +39,8 @@ export function LanguageFilterSection({ value, onChange, translations }: Props) 
           <SelectItem value="en">{translations.langEn}</SelectItem>
           <SelectItem value="zh-cn">{translations.langZhCn}</SelectItem>
           <SelectItem value="zh-tw">{translations.langZhTw}</SelectItem>
-          <SelectItem value="zh-both">{translations.langZhBoth}</SelectItem>
+          {/* TODO: Remove zh-both support after backend refactoring */}
+          {/* <SelectItem value="zh-both">{translations.langZhBoth}</SelectItem> */}
         </SelectContent>
       </Select>
     </div>

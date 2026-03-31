@@ -213,6 +213,54 @@ describe("SearchPageClient", () => {
         );
       });
     });
+
+    it("updates URL with selected language when user picks zh-cn from dropdown", async () => {
+      const user = userEvent.setup();
+      mockSearchParams.set("q", "test");
+
+      render(
+        <SearchPageClient
+          currentMode="hybrid"
+          currentLang="zh-tw"
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(screen.getByRole("button", { name: /advanced/i }));
+      await user.click(screen.getByRole("combobox"));
+      await user.click(screen.getByRole("option", { name: /simplified chinese/i }));
+      await user.click(screen.getByRole("button", { name: /apply filters/i }));
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith(
+          expect.stringContaining("lang=zh-cn")
+        );
+      });
+    });
+
+    it("removes lang from URL when user changes dropdown back to locale default", async () => {
+      const user = userEvent.setup();
+      mockSearchParams.set("q", "test");
+      mockSearchParams.set("lang", "en");
+
+      render(
+        <SearchPageClient
+          currentMode="hybrid"
+          currentLang="en"
+          translations={defaultTranslations}
+        />
+      );
+
+      await user.click(screen.getByRole("button", { name: /advanced/i }));
+      await user.click(screen.getByRole("combobox"));
+      await user.click(screen.getByRole("option", { name: /traditional chinese/i }));
+      await user.click(screen.getByRole("button", { name: /apply filters/i }));
+
+      await waitFor(() => {
+        const url = mockPush.mock.calls[mockPush.mock.calls.length - 1][0];
+        expect(url).not.toContain("lang=");
+      });
+    });
   });
 
   describe("locale-aware defaults across locales", () => {
