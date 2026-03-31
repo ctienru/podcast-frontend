@@ -69,6 +69,16 @@ export function AdvancedSearchPanel({
   // Internal state for draft values.
   const [draftMode, setDraftMode] = useState<SearchMode>(currentMode);
   const [draftLang, setDraftLang] = useState<LangFilter>(currentLang);
+  // Track previous prop values to sync drafts during render when props change while panel is open.
+  const [prevMode, setPrevMode] = useState(currentMode);
+  const [prevLang, setPrevLang] = useState(currentLang);
+
+  if (isOpen && (prevMode !== currentMode || prevLang !== currentLang)) {
+    setPrevMode(currentMode);
+    setPrevLang(currentLang);
+    setDraftMode(currentMode);
+    setDraftLang(currentLang);
+  }
 
   useEffect(() => {
     if (!isOpen) return;
