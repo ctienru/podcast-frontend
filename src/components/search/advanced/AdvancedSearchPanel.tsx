@@ -88,6 +88,7 @@ export function AdvancedSearchPanel({
 
   const handleToggle = () => {
     if (!isOpen) {
+      // Sync draft values with current props when opening the panel
       setDraftMode(currentMode);
       setDraftLang(currentLang);
     }
