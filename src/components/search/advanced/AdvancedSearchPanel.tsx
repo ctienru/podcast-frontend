@@ -8,6 +8,22 @@ import { ActionButtons } from "./ActionButtons";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Check if a click target is inside a select portal (Radix UI dropdown, slot-based select, or listbox).
+ * Used by AdvancedSearchPanel to detect clicks outside the panel and its associated dropdowns.
+ */
+const isEventInsideSelectPortal = (target: EventTarget | null): boolean => {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  return Boolean(
+    target.closest("[data-radix-popper-content-wrapper]") ||
+    target.closest("[data-slot='select-content']") ||
+    target.closest("[role='listbox']")
+  );
+};
+
 type Props = {
   isOpen: boolean;
   onToggle: () => void;
@@ -53,18 +69,6 @@ export function AdvancedSearchPanel({
   // Internal state for draft values.
   const [draftMode, setDraftMode] = useState<SearchMode>(currentMode);
   const [draftLang, setDraftLang] = useState<LangFilter>(currentLang);
-
-  const isEventInsideSelectPortal = (target: EventTarget | null): boolean => {
-    if (!(target instanceof Element)) {
-      return false;
-    }
-
-    return Boolean(
-      target.closest("[data-radix-popper-content-wrapper]") ||
-      target.closest("[data-slot='select-content']") ||
-      target.closest("[role='listbox']")
-    );
-  };
 
   useEffect(() => {
     if (!isOpen) return;

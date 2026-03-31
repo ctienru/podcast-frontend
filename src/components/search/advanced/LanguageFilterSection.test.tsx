@@ -39,7 +39,7 @@ describe("LanguageFilterSection", () => {
       expect(screen.getByRole("combobox")).toBeInTheDocument();
     });
 
-    it("should render all four language options when opened", async () => {
+    it("should render all three language options when opened", async () => {
       const user = userEvent.setup();
 
       render(
@@ -55,10 +55,9 @@ describe("LanguageFilterSection", () => {
       expect(screen.getByRole("option", { name: "Traditional Chinese" })).toBeInTheDocument();
       expect(screen.getByRole("option", { name: "Simplified Chinese" })).toBeInTheDocument();
       expect(screen.getByRole("option", { name: "English" })).toBeInTheDocument();
-      expect(screen.getByRole("option", { name: "Both Chinese scripts" })).toBeInTheDocument();
     });
 
-    it("should have exactly four options", async () => {
+    it("should have exactly three options", async () => {
       const user = userEvent.setup();
 
       render(
@@ -71,7 +70,7 @@ describe("LanguageFilterSection", () => {
 
       await user.click(screen.getByRole("combobox"));
 
-      expect(screen.getAllByRole("option")).toHaveLength(4);
+      expect(screen.getAllByRole("option")).toHaveLength(3);
     });
   });
 
@@ -112,17 +111,6 @@ describe("LanguageFilterSection", () => {
       expect(screen.getByRole("combobox")).toHaveTextContent("English");
     });
 
-    it("should show Both Chinese scripts when value is zh-both", () => {
-      render(
-        <LanguageFilterSection
-          value="zh-both"
-          onChange={vi.fn()}
-          translations={defaultTranslations}
-        />
-      );
-
-      expect(screen.getByRole("combobox")).toHaveTextContent("Both Chinese scripts");
-    });
   });
 
   describe("Interaction", () => {
@@ -180,23 +168,6 @@ describe("LanguageFilterSection", () => {
       expect(onChange).toHaveBeenCalledWith("en");
     });
 
-    it("should call onChange with zh-both when Both Chinese scripts is selected", async () => {
-      const user = userEvent.setup();
-      const onChange = vi.fn();
-
-      render(
-        <LanguageFilterSection
-          value="zh-tw"
-          onChange={onChange}
-          translations={defaultTranslations}
-        />
-      );
-
-      await user.click(screen.getByRole("combobox"));
-      await user.click(screen.getByRole("option", { name: "Both Chinese scripts" }));
-
-      expect(onChange).toHaveBeenCalledWith("zh-both");
-    });
   });
 
   describe("No legacy options", () => {
