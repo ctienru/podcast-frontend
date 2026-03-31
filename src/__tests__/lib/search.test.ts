@@ -66,7 +66,7 @@ describe("searchShowsFromApi", () => {
     expect(result.pageSize).toBe(10);
   });
 
-  it("should throw SearchApiError on HTTP error", async () => {
+  it("should throw SearchApiError on non-transient HTTP error", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
@@ -75,6 +75,21 @@ describe("searchShowsFromApi", () => {
     await expect(
       searchShowsFromApi({ query: "test", pageSize: 10 })
     ).rejects.toThrow("Show search API error: 500");
+  });
+
+  it("should degrade gracefully on transient HTTP error", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 503,
+    });
+
+    const { result, warning } = await searchShowsFromApi({ query: "test", pageSize: 10 });
+
+    expect(result.items).toEqual([]);
+    expect(result.total).toBe(0);
+    expect(result.page).toBe(1);
+    expect(result.pageSize).toBe(10);
+    expect(warning).toBe("Show search temporarily unavailable (503)");
   });
 
   it("should throw SearchApiError on API error status", async () => {

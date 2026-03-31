@@ -52,7 +52,6 @@ export default async function SearchResultsSection({
     searchRequestId = reqId || null;
 
     if (warning) {
-      console.warn("[search] episode search degraded:", warning, { query, mode });
       warnings.push(warning);
     }
 
@@ -69,7 +68,6 @@ export default async function SearchResultsSection({
 
         showResults = shows.items;
         if (showWarning) {
-          console.warn("[search] show search degraded:", showWarning, { query });
           warnings.push(showWarning);
         }
       } catch (showErr) {
