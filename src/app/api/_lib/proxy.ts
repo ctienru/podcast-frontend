@@ -67,15 +67,13 @@ export async function proxyToBackend(
     const responseHeaders = new Headers();
     const contentType = upstreamResponse.headers.get("content-type");
     const cacheControl = upstreamResponse.headers.get("cache-control");
-    const contentEncoding = upstreamResponse.headers.get("content-encoding");
 
     responseHeaders.set("content-type", contentType ?? "application/json");
     if (cacheControl) {
       responseHeaders.set("cache-control", cacheControl);
     }
-    if (contentEncoding) {
-      responseHeaders.set("content-encoding", contentEncoding);
-    }
+    // Do not forward content-encoding: fetch already decompresses the body,
+    // so re-sending the header would cause the client to double-decompress.
 
     return new Response(upstreamResponse.body, {
       status: upstreamResponse.status,
