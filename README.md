@@ -54,6 +54,13 @@ Podcast episode search frontend built with Next.js 16 and React 19, featuring se
 podcast-frontend/
 ├── src/
 │   ├── app/                      # Next.js App Router
+│   │   ├── api/                 # Frontend API proxy routes
+│   │   │   ├── _lib/proxy.ts   # Shared proxy utility
+│   │   │   ├── logs/click/     # Click analytics beacon
+│   │   │   ├── rankings/       # Rankings proxy
+│   │   │   ├── search/episodes/ # Episode search proxy
+│   │   │   ├── search/shows/   # Show search proxy
+│   │   │   └── shows/batch/    # Batch show lookup
 │   │   ├── [locale]/            # i18n routes (en, zh-TW, zh-CN)
 │   │   │   ├── page.tsx         # Home page
 │   │   │   ├── search/          # Search results
@@ -190,7 +197,7 @@ The search interface follows a **Progressive Disclosure** pattern:
 
 ### Implementation Details
 
-- **5 test files**, **65 tests**, **100% pass rate**
+- **6 test files**, **75 tests**, **100% pass rate**
 - Radix UI components for accessibility (label, radio-group, select)
 - URL parameters automatically synced (default values omitted)
 - Full backward compatibility with existing URLs
